@@ -85,25 +85,59 @@ firebase_app = None
 def initialize_firebase():
     global firebase_initialized, db, bucket, firebase_app
     
-    # Temporarily disable Firebase due to key format issues
-    logger.info("🚂 Railway deployment - using in-memory storage for now")
-    firebase_initialized = False
-    
-    # Initialize in-memory storage
-    global IN_MEMORY_ADMIN, IN_MEMORY_USERS, IN_MEMORY_RESUMES, IN_MEMORY_ADMINS
-    
-    IN_MEMORY_ADMIN = {
-        "email": "admin@aiu.edu.my",
-        "password_hash": bcrypt.hashpw("Admin123!".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
-        "created_at": datetime.now(),
-        "last_login": None
-    }
-    IN_MEMORY_USERS = {}
-    IN_MEMORY_RESUMES = {}
-    IN_MEMORY_ADMINS = {"dev_admin": IN_MEMORY_ADMIN}
-    
-    logger.info("✅ In-memory storage initialized successfully")
-    return False
+    try:
+        # Check if Firebase credentials are available via environment variables
+        firebase_credentials = os.getenv("FIREBASE_CREDENTIALS")
+        project_id = os.getenv("FIREBASE_PROJECT_ID", "resume-analyzer-d58fd")
+        
+        if firebase_credentials:
+            # Parse credentials from environment variable (JSON string)
+            import json
+            cred_dict = json.loads(firebase_credentials)
+            cred = credentials.Certificate(cred_dict)
+            
+            # Initialize Firebase app
+            firebase_app = firebase_admin.initialize_app(cred, {
+                'storageBucket': BUCKET_NAME
+            })
+            
+            # Initialize Firestore
+            db = firestore.client()
+            
+            # Initialize Storage
+            bucket = storage.bucket()
+            
+            firebase_initialized = True
+            logger.info("✅ Firebase initialized successfully with environment credentials")
+            
+            # Create default admin after successful initialization
+            create_default_admin()
+            return True
+            
+        else:
+            logger.warning("⚠️ Firebase credentials not found in environment variables")
+            raise Exception("Firebase credentials not configured")
+            
+    except Exception as e:
+        logger.warning(f"⚠️ Firebase initialization failed: {str(e)}")
+        logger.info("🚂 Railway deployment - using in-memory storage")
+        firebase_initialized = False
+        
+        # Initialize in-memory storage
+        global IN_MEMORY_ADMIN, IN_MEMORY_USERS, IN_MEMORY_RESUMES, IN_MEMORY_ADMINS
+        
+        IN_MEMORY_ADMIN = {
+            "email": "admin@aiu.edu.my",
+            "password_hash": bcrypt.hashpw("Admin123!".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
+            "created_at": datetime.now(),
+            "last_login": None
+        }
+        IN_MEMORY_USERS = {}
+        IN_MEMORY_RESUMES = {}
+        IN_MEMORY_ADMINS = {"dev_admin": IN_MEMORY_ADMIN}
+        
+        logger.info("✅ In-memory storage initialized successfully")
+        return False
 def create_default_admin():
     if not db:
         return
