@@ -85,130 +85,25 @@ firebase_app = None
 def initialize_firebase():
     global firebase_initialized, db, bucket, firebase_app
     
-    try:
-        firebase_app = firebase_admin.get_app()
-        firebase_initialized = True
-        db = firestore.client()
-        bucket = storage.bucket(BUCKET_NAME)
-        logger.info("✅ Firebase already initialized")
-        return True
-    except ValueError:
-        pass
+    # Temporarily disable Firebase due to key format issues
+    logger.info("🚂 Railway deployment - using in-memory storage for now")
+    firebase_initialized = False
     
-    try:
-        # Method 1: Try environment variables (Railway preferred)
-        firebase_private_key = os.getenv('FIREBASE_PRIVATE_KEY')
-        firebase_project_id = os.getenv('FIREBASE_PROJECT_ID')
-        firebase_client_email = os.getenv('FIREBASE_CLIENT_EMAIL')
-        
-        if firebase_private_key and firebase_project_id and firebase_client_email:
-            # Clean up the private key - handle different formats
-            private_key = firebase_private_key.strip()
-            
-            # Replace escaped newlines with actual newlines
-            if '\\n' in private_key:
-                private_key = private_key.replace('\\n', '\n')
-            
-            # Ensure proper PEM format
-            if not private_key.startswith('-----BEGIN PRIVATE KEY-----'):
-                raise ValueError("Private key must start with -----BEGIN PRIVATE KEY-----")
-            if not private_key.endswith('-----END PRIVATE KEY-----'):
-                raise ValueError("Private key must end with -----END PRIVATE KEY-----")
-            
-            service_account_info = {
-                "type": "service_account",
-                "project_id": firebase_project_id,
-                "private_key_id": os.getenv('FIREBASE_PRIVATE_KEY_ID', ''),
-                "private_key": private_key,
-                "client_email": firebase_client_email,
-                "client_id": os.getenv('FIREBASE_CLIENT_ID', ''),
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/{firebase_client_email.replace('@', '%40')}",
-                "universe_domain": "googleapis.com"
-            }
-            
-            cred = credentials.Certificate(service_account_info)
-            logger.info("✅ Using Firebase service account from environment variables")
-        
-        # Method 2: Try JSON environment variable
-        elif os.getenv('FIREBASE_SERVICE_ACCOUNT'):
-            firebase_config_json = os.getenv('FIREBASE_SERVICE_ACCOUNT')
-            service_account_info = json.loads(firebase_config_json)
-            
-            # Fix private key format
-            if 'private_key' in service_account_info:
-                private_key = service_account_info['private_key']
-                if '\\n' in private_key:
-                    service_account_info['private_key'] = private_key.replace('\\n', '\n')
-            
-            cred = credentials.Certificate(service_account_info)
-            logger.info("✅ Using Firebase service account from JSON environment")
-        
-        # Method 3: Try service account files
-        else:
-            service_account_files = ['serviceAccountKey.json', 'firebase-service-account.json', 'credentials.json']
-            cred = None
-            for file_path in service_account_files:
-                if os.path.exists(file_path):
-                    # Read and fix the JSON file
-                    with open(file_path, 'r') as f:
-                        service_account_data = json.load(f)
-                    
-                    # Fix the private key format
-                    if 'private_key' in service_account_data:
-                        private_key = service_account_data['private_key']
-                        # Replace \n with actual newlines
-                        service_account_data['private_key'] = private_key.replace('\\n', '\n')
-                    
-                    cred = credentials.Certificate(service_account_data)
-                    logger.info(f"✅ Using Firebase service account from {file_path}")
-                    break
-            
-            if not cred:
-                raise Exception("No Firebase credentials found")
-        
-        # Initialize Firebase
-        firebase_app = firebase_admin.initialize_app(cred, {
-            'storageBucket': BUCKET_NAME
-        })
-        
-        db = firestore.client()
-        bucket = storage.bucket(BUCKET_NAME)
-        firebase_initialized = True
-        
-        # Test the connection
-        test_collection = db.collection('_test')
-        test_doc = test_collection.document('connection_test')
-        test_doc.set({'timestamp': datetime.now(), 'status': 'connected'})
-        logger.info("✅ Firebase connection test successful")
-        
-        create_default_admin()
-        logger.info("✅ Firebase initialized successfully")
-        return True
-        
-    except Exception as e:
-        logger.error(f"❌ Firebase initialization failed: {e}")
-        logger.error(f"❌ Error type: {type(e).__name__}")
-        
-        # Fall back to in-memory storage
-        firebase_initialized = False
-        global IN_MEMORY_ADMIN, IN_MEMORY_USERS, IN_MEMORY_RESUMES, IN_MEMORY_ADMINS
-        
-        IN_MEMORY_ADMIN = {
-            "email": "admin@aiu.edu.my",
-            "password_hash": bcrypt.hashpw("Admin123!".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
-            "created_at": datetime.now(),
-            "last_login": None
-        }
-        IN_MEMORY_USERS = {}
-        IN_MEMORY_RESUMES = {}
-        IN_MEMORY_ADMINS = {"dev_admin": IN_MEMORY_ADMIN}
-        
-        logger.warning("⚠️ Using in-memory storage as fallback")
-        return False
-
+    # Initialize in-memory storage
+    global IN_MEMORY_ADMIN, IN_MEMORY_USERS, IN_MEMORY_RESUMES, IN_MEMORY_ADMINS
+    
+    IN_MEMORY_ADMIN = {
+        "email": "admin@aiu.edu.my",
+        "password_hash": bcrypt.hashpw("Admin123!".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
+        "created_at": datetime.now(),
+        "last_login": None
+    }
+    IN_MEMORY_USERS = {}
+    IN_MEMORY_RESUMES = {}
+    IN_MEMORY_ADMINS = {"dev_admin": IN_MEMORY_ADMIN}
+    
+    logger.info("✅ In-memory storage initialized successfully")
+    return False
 def create_default_admin():
     if not db:
         return
