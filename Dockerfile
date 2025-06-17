@@ -8,10 +8,11 @@ ENV PORT=8000
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies (including curl for health checks)
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
@@ -32,9 +33,7 @@ RUN mkdir -p static templates
 # Expose port
 EXPOSE $PORT
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:$PORT/health || exit 1
+# Remove health check for Railway (Railway handles this externally)
 
 # Run the application
 CMD ["python", "main.py"]
