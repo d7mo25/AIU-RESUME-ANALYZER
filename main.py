@@ -1647,19 +1647,37 @@ async def export_resumes_csv(current_user: dict = Depends(get_current_user)):
 # Health Check
 @app.get("/")
 async def root():
-    return {"message": "AIU Resume Analyzer is running"}
+    return {
+        "message": "AIU Resume Analyzer is running!",
+        "status": "healthy", 
+        "timestamp": "2024-06-18"
+    }
 
 @app.get("/health")
 async def health():
     return {"status": "ok"}
 
+@app.get("/ping")
+async def ping():
+    return {"ping": "pong"}
+
 if __name__ == "__main__":
     import uvicorn
     import os
     
-    # Get port from Railway environment
     port = int(os.getenv("PORT", 8000))
-    print(f"🚀 Starting on port {port}")
+    print(f"🚀 Starting AIU Resume Analyzer on port {port}")
+    print(f"🔧 Environment: Railway Production")
+    print(f"📦 Python version: {os.sys.version}")
     
-    # Start the server
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    try:
+        uvicorn.run(
+            app, 
+            host="0.0.0.0", 
+            port=port,
+            log_level="info",
+            access_log=True
+        )
+    except Exception as e:
+        print(f"❌ Startup error: {e}")
+        raise
