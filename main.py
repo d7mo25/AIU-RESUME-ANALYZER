@@ -1672,5 +1672,11 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    logger.info("🚀 Starting AIU Smart Resume Analyzer")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import os
+    
+    # Get port from Railway environment
+    port = int(os.getenv("PORT", 8000))
+    print(f"🚀 Starting on port {port}")
+    
+    # Start the server
+    uvicorn.run(app, host="0.0.0.0", port=port)
