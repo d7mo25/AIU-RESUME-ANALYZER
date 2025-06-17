@@ -1645,30 +1645,13 @@ async def export_resumes_csv(current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=f"Error exporting data: {str(e)}")
 
 # Health Check
-@app.get("/api/health")
-async def health_check():
-    email_service_status = "available" if firebase_initialized else "unavailable"
-    
-    return {
-        "status": "healthy",
-        "firebase_initialized": firebase_initialized,
-        "firestore": db is not None,
-        "storage": bucket is not None,
-        "email_service": email_service_status,
-        "password_reset": "email-based" if firebase_initialized else "not available",
-        "storage_bucket": BUCKET_NAME,
-        "environment": "production" if firebase_initialized else "development",
-        "timestamp": datetime.now().isoformat(),
-        "version": "1.0.0",
-        "features": {
-            "email_password_reset": firebase_initialized,
-            "file_upload": bucket is not None,
-            "user_management": True,
-            "resume_analysis": True,
-            "admin_dashboard": True,
-            "debug_mode": False  # Set to False in production
-        }
-    }
+@app.get("/")
+async def root():
+    return {"message": "AIU Resume Analyzer is running"}
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     import uvicorn
