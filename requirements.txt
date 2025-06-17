@@ -1,35 +1,5 @@
-# Minimal requirements.txt to avoid network timeouts
-# Core FastAPI dependencies
 fastapi==0.104.1
-uvicorn[standard]==0.24.0
-pydantic==2.5.0
-
-# Firebase (essential)
+uvicorn==0.24.0
 firebase-admin==6.2.0
-
-# Authentication
 PyJWT==2.8.0
-bcrypt==4.1.0
-
-# File handling
-python-multipart==0.0.6
-python-dotenv==1.0.0
 requests==2.31.0
-
-# PDF processing (lightweight version)
-pdfminer.six==20231228
-
-# Basic data processing
-numpy==1.24.4
-pandas==2.1.0
-
-# NLP (will be downloaded at runtime)
-spacy==3.7.2
-
-# Web templating
-Jinja2==3.1.2
-
-# Optional: Add these back after successful deployment
-# nltk>=3.8.0
-# matplotlib>=3.7.0
-# email-validator
