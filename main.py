@@ -73,6 +73,7 @@ BUCKET_NAME = os.getenv("FIREBASE_STORAGE_BUCKET", "resume-analyzer-d58fd")
 JWT_SECRET = os.getenv("JWT_SECRET", "your-secure-secret-key-change-in-production")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
+PORT = int(os.getenv("PORT", 8000))
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -1660,6 +1661,7 @@ async def health_check():
         "environment": "production" if firebase_initialized else "development",
         "timestamp": datetime.now().isoformat(),
         "version": "1.0.0",
+        "port": PORT,
         "features": {
             "email_password_reset": firebase_initialized,
             "file_upload": bucket is not None,
@@ -1672,5 +1674,5 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    logger.info("🚀 Starting AIU Smart Resume Analyzer")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    logger.info(f"🚀 Starting AIU Smart Resume Analyzer on port {PORT}")
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
