@@ -66,10 +66,15 @@ pids
 *.seed
 *.pid.lock
 
-# Firebase
+# Firebase - IMPORTANT: Never commit these files
 .firebase/
 .firebaserc
 firebase-debug.log
+serviceAccountKey.json
+firebase-service-account.json
+credentials.json
+**/serviceAccount*.json
+**/firebase-adminsdk-*.json
 
 # Temporary files
 tmp/
