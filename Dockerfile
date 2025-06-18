@@ -52,5 +52,5 @@ EXPOSE $PORT
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:$PORT/api/health || exit 1
 
-# Command to run the application
-CMD uvicorn main:app --host 0.0.0.0 --port $PORT
+# Command to run the application - use shell form to properly expand environment variables
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]
