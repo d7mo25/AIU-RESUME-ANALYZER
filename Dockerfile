@@ -33,7 +33,6 @@ RUN mkdir -p /app/static /app/templates
 
 # Copy application files
 COPY main.py .
-COPY serviceAccountKey.json .
 
 # Copy static files
 COPY static/ ./static/
