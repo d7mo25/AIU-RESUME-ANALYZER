@@ -10,11 +10,82 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <style>
-    /* Admin-specific styling */
+    /* Override the existing body styles to prevent touching header/footer */
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+      background: url(/static/background.jpg) no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      
+      /* Create a flex container that accounts for header and footer */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header styling */
+    .site-header {
+      width: 100%;
+      color: #fff;
+      padding: 15px 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      position: relative; /* Changed from absolute */
+      text-align: left;
+      flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .header-logo {
+      height: 40px;
+      vertical-align: middle;
+      margin-right: 10px;
+      margin-left: 20px;
+    }
+
+    .site-header h2 {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0;
+    }
+
+    /* Main content area - takes remaining space and centers the form */
+    .main-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px; /* Add padding to prevent touching header/footer */
+      min-height: 0; /* Allow shrinking if needed */
+    }
+
+    /* Footer styling */
+    .site-footer {
+      width: 100%;
+      color: #fff;
+      padding: 15px 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      position: relative; /* Changed from absolute */
+      font-size: 14px;
+      text-align: center;
+      flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    /* Form wrapper styles with admin-specific styling */
     .wrapper {
+      width: 420px;
+      max-width: 100%; /* Responsive on small screens */
       background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
       border: 2px solid #4CAF50;
       box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+      backdrop-filter: blur(9px);
+      color: #fff;
+      border-radius: 12px;
+      padding: 30px 40px;
+      margin: 0 auto; /* Center horizontally */
+      box-sizing: border-box;
     }
 
     .admin-header {
@@ -42,6 +113,84 @@
       color: #b8c5d6;
       font-size: 0.9em;
       margin: 5px 0 0 0;
+    }
+
+    .input-box {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      margin: 30px 0;
+    }
+
+    .input-box input {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      border: 2px solid rgba(255, 255, 255, .2);
+      border-radius: 40px;
+      font-size: 16px;
+      color: #fff;
+      padding: 20px 45px 20px 20px;
+      box-sizing: border-box;
+    }
+
+    .input-box input::placeholder {
+      color: #fff;
+    }
+
+    .input-box i {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+    }
+
+    .input-box input:focus {
+      border-color: #4CAF50;
+      box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .btn {
+      width: 100%;
+      height: 45px;
+      background: linear-gradient(45deg, #4CAF50, #45a049);
+      border: none;
+      outline: none;
+      border-radius: 40px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+      cursor: pointer;
+      font-size: 16px;
+      color: #fff;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: linear-gradient(45deg, #45a049, #4CAF50);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn:disabled {
+      background: rgba(76, 175, 80, 0.6);
+      cursor: not-allowed;
+      transform: none;
     }
 
     .error-message, .success-message {
@@ -96,23 +245,6 @@
       to { transform: rotate(360deg); }
     }
 
-    .btn {
-      background: linear-gradient(45deg, #4CAF50, #45a049);
-      transition: all 0.3s ease;
-    }
-
-    .btn:hover {
-      background: linear-gradient(45deg, #45a049, #4CAF50);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
-    }
-
-    .btn:disabled {
-      background: rgba(76, 175, 80, 0.6);
-      cursor: not-allowed;
-      transform: none;
-    }
-
     .back-to-login {
       text-align: center;
       margin-top: 25px;
@@ -136,17 +268,29 @@
       text-decoration: underline;
     }
 
-    .input-box input:focus {
-      border-color: #4CAF50;
-      box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14.5px;
+      margin: -15px 0 15px;
     }
 
     .remember-forgot label {
       color: #4CAF50;
     }
 
+    .remember-forgot label input {
+      accent-color: #4CAF50;
+      margin-right: 3px;
+    }
+
     .remember-forgot a {
       color: #4CAF50;
+      text-decoration: none;
+    }
+
+    .remember-forgot a:hover {
+      text-decoration: underline;
     }
 
     .security-notice {
@@ -182,6 +326,45 @@
       font-size: 13px;
       display: none;
     }
+
+    /* Responsive adjustments */
+    @media (max-height: 700px) {
+      .main-content {
+        padding: 20px 20px;
+      }
+      
+      .wrapper {
+        padding: 20px 30px;
+      }
+      
+      .admin-header h1 {
+        font-size: 1.5em;
+      }
+      
+      .input-box {
+        margin: 20px 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .wrapper {
+        width: 100%;
+        max-width: 380px;
+        padding: 20px 25px;
+      }
+      
+      .main-content {
+        padding: 20px 15px;
+      }
+      
+      .admin-header i {
+        font-size: 2em;
+      }
+      
+      .admin-header h1 {
+        font-size: 1.4em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -190,41 +373,43 @@
     <h2>AIU Smart Resume Analyzer</h2>
   </header>
   
-  <div class="wrapper">
-    <div class="admin-header">
-      <i class='bx bxs-shield'></i>
-      <h1>Admin Portal</h1>
-    </div>
-    
-    <div class="form-container">
-      <div id="errorMessage" class="error-message"></div>
-      <div id="successMessage" class="success-message"></div>
+  <main class="main-content">
+    <div class="wrapper">
+      <div class="admin-header">
+        <i class='bx bxs-shield'></i>
+        <h1>Admin Portal</h1>
+      </div>
       
-      <form id="adminLoginForm">
-        <div class="input-group">
-          <label for="email">Admin Email</label>
-          <div class="input-box">
-            <i class='bx bxs-envelope'></i>
-            <input type="email" id="email" placeholder="Enter admin email" required>
-          </div>
-        </div>
+      <div class="form-container">
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
         
-        <div class="input-group">
-          <label for="password">Password</label>
-          <div class="input-box">
-            <i class='bx bxs-lock-alt'></i>
-            <input type="password" id="password" placeholder="Enter password" required>
+        <form id="adminLoginForm">
+          <div class="input-group">
+            <label for="email">Admin Email</label>
+            <div class="input-box">
+              <i class='bx bxs-envelope'></i>
+              <input type="email" id="email" placeholder="Enter admin email" required>
+            </div>
           </div>
-        </div>
+          
+          <div class="input-group">
+            <label for="password">Password</label>
+            <div class="input-box">
+              <i class='bx bxs-lock-alt'></i>
+              <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn" id="loginBtn">Login</button>
+        </form>
         
-        <button type="submit" class="btn" id="loginBtn">Login</button>
-      </form>
-      
-      <div class="back-to-login">
-        <p><a href="/"><i class='bx bx-arrow-back'></i> Back to user login</a></p>
+        <div class="back-to-login">
+          <p><a href="/"><i class='bx bx-arrow-back'></i> Back to user login</a></p>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
   
   <footer class="site-footer">
     <p>&copy; DEVELOPED BY SCHOOL OF COMPUTING AND INFORMATICS</p>
