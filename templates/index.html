@@ -8,7 +8,159 @@
     <link rel="icon" type="image/png" href="/static/favicon.png">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-    /* Only adding minimal styles for error/success messages */
+    /* Override the existing body styles to prevent touching header/footer */
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+      background: url(/static/background.jpg) no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      
+      /* Create a flex container that accounts for header and footer */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header styling */
+    .site-header {
+      width: 100%;
+      color: #fff;
+      padding: 15px 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      position: relative; /* Changed from absolute */
+      text-align: left;
+      flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .header-logo {
+      height: 40px;
+      vertical-align: middle;
+      margin-right: 10px;
+      margin-left: 20px;
+    }
+
+    .site-header h2 {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0;
+    }
+
+    /* Main content area - takes remaining space and centers the form */
+    .main-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px; /* Add padding to prevent touching header/footer */
+      min-height: 0; /* Allow shrinking if needed */
+    }
+
+    /* Footer styling */
+    .site-footer {
+      width: 100%;
+      color: #fff;
+      padding: 15px 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      position: relative; /* Changed from absolute */
+      font-size: 14px;
+      text-align: center;
+      flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    /* Form wrapper styles */
+    .wrapper {
+      width: 420px;
+      max-width: 100%; /* Responsive on small screens */
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, .2);
+      backdrop-filter: blur(9px);
+      color: #fff;
+      border-radius: 12px;
+      padding: 30px 40px;
+      margin: 0 auto; /* Center horizontally */
+      box-sizing: border-box;
+    }
+
+    .wrapper h1 {
+      font-size: 36px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .wrapper .input-box {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      margin: 30px 0;
+    }
+
+    .input-box input {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      border: 2px solid rgba(255, 255, 255, .2);
+      border-radius: 40px;
+      font-size: 16px;
+      color: #fff;
+      padding: 20px 45px 20px 20px;
+      box-sizing: border-box;
+    }
+
+    .input-box input::placeholder {
+      color: #fff;
+    }
+
+    .input-box i {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+    }
+
+    .wrapper .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14.5px;
+      margin: -15px 0 15px;
+    }
+
+    .remember-forgot label input {
+      accent-color: #fff;
+      margin-right: 3px;
+    }
+
+    .remember-forgot a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .remember-forgot a:hover {
+      text-decoration: underline;
+    }
+
+    .wrapper .btn {
+      width: 100%;
+      height: 45px;
+      background: #fff;
+      border: none;
+      outline: none;
+      border-radius: 40px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+      cursor: pointer;
+      font-size: 16px;
+      color: #333;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+
+    /* Additional styles for error/success messages */
     .error-message, .success-message {
       padding: 10px;
       border-radius: 5px;
@@ -83,6 +235,42 @@
     .admin-login a:hover {
       text-decoration: underline;
     }
+
+    /* Responsive adjustments */
+    @media (max-height: 700px) {
+      .main-content {
+        padding: 20px 20px;
+      }
+      
+      .wrapper {
+        padding: 20px 30px;
+      }
+      
+      .wrapper h1 {
+        font-size: 28px;
+        margin-bottom: 15px;
+      }
+      
+      .wrapper .input-box {
+        margin: 20px 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .wrapper {
+        width: 100%;
+        max-width: 380px;
+        padding: 20px 25px;
+      }
+      
+      .main-content {
+        padding: 20px 15px;
+      }
+      
+      .wrapper h1 {
+        font-size: 26px;
+      }
+    }
   </style>
 </head>
 <body> 
@@ -91,107 +279,109 @@
     <h2>AIU Smart Resume Analyzer</h2>
   </header> 
 
-        <div class="wrapper">
-    <form id="loginForm">
-      <h1>Login</h1>
-      
-      <div id="errorMessage" class="error-message"></div>
-      <div id="successMessage" class="success-message"></div>
-      
-      <div class="input-box">
-        <input 
-          type="email" 
-          id="email"
-          placeholder="Email Address" 
-          required 
-          pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
-          title="Please enter a valid email address (e.g., user@example.com)"
-        >
-        <i class='bx bxs-envelope'></i>
-      </div>
-      <div class="input-box">
-        <input 
-          type="password" 
-          id="password"
-          placeholder="Password" 
-          required
-          minlength="8"
-          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
-          title="Must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number"
-        >
-        <i class='bx bxs-lock-alt'></i>
-      </div>
-      <div class="remember-forgot">
-        <label><input type="checkbox" id="rememberMe">Remember Me</label>
-        <a href="/forgot-password" id="forgotPasswordLink">Forgot Password</a>
-      </div>
-      <button type="submit" class="btn" id="loginBtn">Login</button>
-      
-      <div class="register-login">
-        <p>Don't have an account? <a href="/register">Register here</a></p>
-      </div>
-      
-      <div class="admin-login">
-        <a href="/admin-login"><i class='bx bxs-shield'></i> Admin Login</a>
-      </div>
-    </form>
-  </div>
+  <main class="main-content">
+    <div class="wrapper">
+      <form id="loginForm">
+        <h1>Login</h1>
+        
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        
+        <div class="input-box">
+          <input 
+            type="email" 
+            id="email"
+            placeholder="Email Address" 
+            required 
+            pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+            title="Please enter a valid email address (e.g., user@example.com)"
+          >
+          <i class='bx bxs-envelope'></i>
+        </div>
+        <div class="input-box">
+          <input 
+            type="password" 
+            id="password"
+            placeholder="Password" 
+            required
+            minlength="8"
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
+            title="Must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number"
+          >
+          <i class='bx bxs-lock-alt'></i>
+        </div>
+        <div class="remember-forgot">
+          <label><input type="checkbox" id="rememberMe">Remember Me</label>
+          <a href="/forgot-password" id="forgotPasswordLink">Forgot Password</a>
+        </div>
+        <button type="submit" class="btn" id="loginBtn">Login</button>
+        
+        <div class="register-login">
+          <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
+        
+        <div class="admin-login">
+          <a href="/admin-login"><i class='bx bxs-shield'></i> Admin Login</a>
+        </div>
+      </form>
+    </div>
+  </main>
 
   <footer class="site-footer">
     <p>&copy; DEVELOPED BY SCHOOL OF COMPUTING AND INFORMATICS</p>
   </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('loginForm');
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.getElementById('loginForm');
+        
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            loginForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // Show loading state
+            const loginBtn = document.getElementById('loginBtn');
+            const originalBtnText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<span class="loading"></span> Logging in...';
+            loginBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password, rememberMe })
+                });
                 
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const rememberMe = document.getElementById('rememberMe').checked;
+                const result = await response.json();
                 
-                // Show loading state
-                const loginBtn = document.getElementById('loginBtn');
-                const originalBtnText = loginBtn.innerHTML;
-                loginBtn.innerHTML = '<span class="loading"></span> Logging in...';
-                loginBtn.disabled = true;
-                
-                try {
-                    const response = await fetch('/api/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ email, password, rememberMe })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (!response.ok) {
-                        throw new Error(result.detail || 'Login failed');
-                    }
-                    
-                    // Store token (if rememberMe, use localStorage, else sessionStorage)
-                    if (rememberMe) {
-                        localStorage.setItem('authToken', result.token);
-                    } else {
-                        sessionStorage.setItem('authToken', result.token);
-                    }
-                    
-                    // Redirect to resume upload page
-                    window.location.href = '/resume-upload';
-                } catch (error) {
-                    console.error("Login error:", error);
-                    const errorMessage = document.getElementById('errorMessage');
-                    errorMessage.textContent = error.message;
-                    errorMessage.style.display = 'block';
-                    loginBtn.innerHTML = originalBtnText;
-                    loginBtn.disabled = false;
+                if (!response.ok) {
+                    throw new Error(result.detail || 'Login failed');
                 }
-            });
+                
+                // Store token (if rememberMe, use localStorage, else sessionStorage)
+                if (rememberMe) {
+                    localStorage.setItem('authToken', result.token);
+                } else {
+                    sessionStorage.setItem('authToken', result.token);
+                }
+                
+                // Redirect to resume upload page
+                window.location.href = '/resume-upload';
+            } catch (error) {
+                console.error("Login error:", error);
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                loginBtn.innerHTML = originalBtnText;
+                loginBtn.disabled = false;
+            }
         });
-    </script>
+    });
+  </script>
 </body>
 </html>
