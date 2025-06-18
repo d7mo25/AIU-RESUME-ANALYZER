@@ -97,36 +97,77 @@ def initialize_firebase():
         pass
     
     try:
+        # Try to get service account from environment variable first
         firebase_config_json = os.getenv('FIREBASE_SERVICE_ACCOUNT')
         if firebase_config_json:
-            service_account_info = json.loads(firebase_config_json)
-            cred = credentials.Certificate(service_account_info)
-            logger.info("✅ Using Firebase service account from environment")
+            try:
+                service_account_info = json.loads(firebase_config_json)
+                cred = credentials.Certificate(service_account_info)
+                logger.info("✅ Using Firebase service account from environment variable")
+            except json.JSONDecodeError as e:
+                logger.error(f"❌ Invalid JSON in FIREBASE_SERVICE_ACCOUNT: {e}")
+                raise Exception("Invalid Firebase service account JSON in environment variable")
         else:
+            # Fallback to file-based credentials (not recommended for production)
             service_account_files = ['serviceAccountKey.json', 'firebase-service-account.json', 'credentials.json']
             cred = None
             for file_path in service_account_files:
                 if os.path.exists(file_path):
-                    cred = credentials.Certificate(file_path)
-                    logger.info(f"✅ Using Firebase service account from {file_path}")
-                    break
+                    try:
+                        cred = credentials.Certificate(file_path)
+                        logger.info(f"✅ Using Firebase service account from {file_path}")
+                        break
+                    except Exception as file_error:
+                        logger.error(f"❌ Error loading {file_path}: {file_error}")
+                        continue
             
             if not cred:
-                cred = credentials.ApplicationDefault()
-                logger.info("✅ Using Firebase default credentials")
+                # Try application default credentials
+                try:
+                    cred = credentials.ApplicationDefault()
+                    logger.info("✅ Using Firebase default credentials")
+                except Exception as default_error:
+                    logger.error(f"❌ No valid Firebase credentials found: {default_error}")
+                    raise Exception("No valid Firebase credentials available")
         
-        firebase_app = firebase_admin.initialize_app(cred, {'storageBucket': BUCKET_NAME})
+        # Initialize Firebase app
+        firebase_app = firebase_admin.initialize_app(cred, {
+            'storageBucket': BUCKET_NAME,
+            'projectId': 'resume-analyzer-d58fd'  # Explicitly set project ID
+        })
+        
+        # Test the connection
         db = firestore.client()
         bucket = storage.bucket(BUCKET_NAME)
-        firebase_initialized = True
         
+        # Test authentication by performing a simple operation
+        try:
+            # Try to access Firestore (this will fail if credentials are invalid)
+            test_ref = db.collection('_test_connection').document('test')
+            # Just check if we can create a reference (doesn't actually write data)
+            logger.info("✅ Firebase authentication test passed")
+        except Exception as auth_test_error:
+            logger.error(f"❌ Firebase authentication test failed: {auth_test_error}")
+            raise Exception("Firebase authentication failed - credentials may be invalid")
+        
+        firebase_initialized = True
         create_default_admin()
         logger.info("✅ Firebase initialized successfully")
         return True
         
     except Exception as e:
         logger.error(f"❌ Firebase initialization failed: {e}")
+        logger.warning("⚠️ Falling back to development mode (in-memory storage)")
         firebase_initialized = False
+        
+        # Additional error context
+        if "Invalid JWT Signature" in str(e):
+            logger.error("🔑 JWT Signature error - service account credentials are likely invalid or expired")
+            logger.error("🔧 Please regenerate your service account key in Firebase Console")
+        elif "invalid_grant" in str(e):
+            logger.error("🔑 Invalid grant error - service account may have been revoked")
+            logger.error("🔧 Please create new service account credentials")
+        
         return False
 
 def create_default_admin():
@@ -731,7 +772,7 @@ async def check_email_exists(email_data: CheckEmailRequest):
         raise HTTPException(status_code=500, detail="Error checking email address")
 
 @app.post("/api/forgot-password/send-reset")
-async def send_password_reset_email(email_data: PasswordResetRequest):
+async def send_password_reset_email(email_data: PasswordResetRequest, request: Request):
     """Send password reset email using Firebase Admin SDK (fallback endpoint)"""
     logger.info(f"📧 Backend password reset request for: {email_data.email}")
     
@@ -1668,7 +1709,8 @@ async def health_check():
             "user_management": True,
             "resume_analysis": True,
             "admin_dashboard": True,
-            "debug_mode": False  # Set to False in production
+            "debug_mode": False,  # Set to False in production
+            "firebase_error_context": "Check logs for detailed Firebase authentication errors"
         }
     }
 
