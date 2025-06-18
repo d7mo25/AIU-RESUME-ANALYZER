@@ -111,7 +111,14 @@
           <label for="email">Email Address</label>
           <div class="input-box">
             <i class='bx bxs-envelope'></i>
-            <input type="email" id="email" placeholder="Enter your email" required>
+            <input 
+              type="email" 
+              id="email" 
+              placeholder="Enter your email" 
+              required 
+              pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+              title="Please enter a valid email address (e.g., user@example.com)"
+            >
           </div>
         </div>
         
@@ -128,7 +135,18 @@
           <label for="password">Password</label>
           <div class="input-box">
             <i class='bx bxs-lock-alt'></i>
-            <input type="password" id="password" placeholder="Create a password" required minlength="6">
+            <input 
+              type="password" 
+              id="password" 
+              placeholder="Create a password" 
+              required 
+              minlength="8"
+              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
+              title="Must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number"
+            >
+          </div>
+          <div class="password-requirements">
+            Must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number
           </div>
         </div>
         
@@ -136,7 +154,15 @@
           <label for="confirmPassword">Confirm Password</label>
           <div class="input-box">
             <i class='bx bxs-lock-alt'></i>
-            <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              placeholder="Confirm your password" 
+              required 
+              minlength="8"
+              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
+              title="Must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number"
+            >
           </div>
         </div>
         
@@ -191,6 +217,16 @@
       return /^\+[1-9]\d{1,14}$/.test(phone);
     }
 
+    function validatePassword(password) {
+      // Updated validation to match the pattern: at least 8 characters, one uppercase, one lowercase, one number
+      return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
+    }
+
+    function validateEmail(email) {
+      // Email validation to match the pattern
+      return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
+    }
+
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -201,14 +237,19 @@
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
       
-      // Simple validation
-      if (password !== confirmPassword) {
-        showError('Passwords do not match');
+      // Enhanced validation
+      if (!validateEmail(email)) {
+        showError('Please enter a valid email address (e.g., user@example.com)');
         return;
       }
       
-      if (password.length < 6) {
-        showError('Password must be at least 6 characters');
+      if (!validatePassword(password)) {
+        showError('Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        showError('Passwords do not match');
         return;
       }
       
