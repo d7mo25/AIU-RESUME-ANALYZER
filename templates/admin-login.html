@@ -152,7 +152,7 @@
       pointer-events: none;
     }
 
-    /* Password toggle positioning (right side) */
+    /* Password toggle positioning (right side) - Fixed positioning */
     .password-toggle {
       position: absolute;
       right: 20px;
@@ -161,12 +161,26 @@
       font-size: 18px;
       color: rgba(255, 255, 255, 0.7);
       cursor: pointer;
-      z-index: 2;
+      z-index: 10;
       transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
     }
 
     .password-toggle:hover {
       color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Ensure stable positioning for both icon states */
+    .password-toggle.bx-hide,
+    .password-toggle.bx-show {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
     }
 
     /* Input padding adjustments - consistent spacing */
