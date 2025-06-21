@@ -152,35 +152,48 @@
       pointer-events: none;
     }
 
-    /* Password toggle positioning (right side) - Fixed positioning */
+    /* Password toggle positioning (right side) - Bulletproof fix */
     .password-toggle {
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 18px;
-      color: rgba(255, 255, 255, 0.7);
-      cursor: pointer;
-      z-index: 10;
-      transition: color 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
+      position: absolute !important;
+      right: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      font-size: 18px !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+      cursor: pointer !important;
+      z-index: 999 !important;
+      transition: color 0.3s ease !important;
+      display: inline-block !important;
+      width: 18px !important;
+      height: 18px !important;
+      line-height: 1 !important;
+      vertical-align: middle !important;
+      text-align: center !important;
     }
 
     .password-toggle:hover {
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 0.9) !important;
     }
 
-    /* Ensure stable positioning for both icon states */
+    /* Override any Boxicons positioning for both states */
     .password-toggle.bx-hide,
     .password-toggle.bx-show {
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
+      position: absolute !important;
+      right: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      display: inline-block !important;
+      float: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Ensure the input doesn't interfere */
+    .input-box input:focus + .bxs-lock-alt + .password-toggle {
+      position: absolute !important;
+      right: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
     }
 
     /* Input padding adjustments - consistent spacing */
@@ -484,10 +497,16 @@
         const passwordInput = document.getElementById('password');
         const passwordToggle = document.getElementById('passwordToggle');
         
-        // Password visibility toggle functionality
+        // Password visibility toggle functionality with position lock
         passwordToggle.addEventListener('click', function() {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
+            
+            // Store current position before changing icon
+            const currentStyle = window.getComputedStyle(passwordToggle);
+            const currentRight = currentStyle.right;
+            const currentTop = currentStyle.top;
+            const currentTransform = currentStyle.transform;
             
             // Toggle icon
             if (type === 'text') {
@@ -499,6 +518,13 @@
                 passwordToggle.classList.add('bx-hide');
                 passwordToggle.setAttribute('title', 'Show password');
             }
+            
+            // Force position lock after icon change
+            passwordToggle.style.position = 'absolute';
+            passwordToggle.style.right = '20px';
+            passwordToggle.style.top = '50%';
+            passwordToggle.style.transform = 'translateY(-50%)';
+            passwordToggle.style.zIndex = '999';
         });
         
         function showError(message) {
