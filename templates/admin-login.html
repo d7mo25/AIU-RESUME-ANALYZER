@@ -152,65 +152,72 @@
       pointer-events: none;
     }
 
-    /* FIXED: Password toggle wrapper for absolute positioning */
-    .password-toggle-wrapper {
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 999;
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    /* FIXED: Password toggle icon - no positioning needed, wrapper handles it */
-    .password-toggle {
+    /* BULLETPROOF: Password toggle with absolute positioning that NEVER moves */
+    .input-box .password-toggle {
+      position: absolute !important;
+      right: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
       font-size: 18px !important;
       color: rgba(255, 255, 255, 0.7) !important;
-      transition: color 0.3s ease !important;
       cursor: pointer !important;
-      /* Remove all positioning - let wrapper handle it */
-      position: static !important;
-      right: auto !important;
-      top: auto !important;
-      left: auto !important;
-      bottom: auto !important;
-      transform: none !important;
+      z-index: 999 !important;
+      transition: color 0.3s ease !important;
+      width: 18px !important;
+      height: 18px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       margin: 0 !important;
       padding: 0 !important;
-      display: inline-block !important;
-      width: auto !important;
-      height: auto !important;
+      border: none !important;
+      background: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      text-decoration: none !important;
+      vertical-align: baseline !important;
       line-height: 1 !important;
+      float: none !important;
+      clear: none !important;
+    }
+
+    /* Force override for BOTH icon states - nuclear option */
+    .input-box .password-toggle.bx-hide,
+    .input-box .password-toggle.bx-show,
+    .input-box .password-toggle:before,
+    .input-box .password-toggle:after {
+      position: absolute !important;
+      right: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      left: auto !important;
+      bottom: auto !important;
+      float: none !important;
+      clear: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 18px !important;
+      height: 18px !important;
+      font-size: 18px !important;
+      line-height: 1 !important;
+      text-align: center !important;
       vertical-align: baseline !important;
     }
 
-    .password-toggle-wrapper:hover .password-toggle {
+    .input-box .password-toggle:hover {
       color: rgba(255, 255, 255, 0.9) !important;
     }
 
-    /* Override any Boxicons positioning - force them to stay in place */
-    .password-toggle.bx-hide,
-    .password-toggle.bx-show {
-      position: static !important;
-      right: auto !important;
-      top: auto !important;
-      left: auto !important;
-      bottom: auto !important;
-      transform: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      float: none !important;
-      display: inline-block !important;
-    }
-
-    /* Ensure input doesn't interfere */
-    .input-box input:focus ~ .password-toggle-wrapper .password-toggle {
-      color: rgba(255, 255, 255, 0.9) !important;
+    /* Make sure input focus doesn't affect toggle position */
+    .input-box input:focus + .bxs-lock-alt + .password-toggle,
+    .input-box input:focus ~ .password-toggle {
+      position: absolute !important;
+      right: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
     }
 
     /* Input padding adjustments - consistent spacing */
@@ -473,9 +480,7 @@
             <div class="input-box">
               <i class='bx bxs-lock-alt'></i>
               <input type="password" id="password" placeholder="Enter password" required>
-              <div class="password-toggle-wrapper">
-                <i class='bx bx-hide password-toggle' id="passwordToggle" title="Show password"></i>
-              </div>
+              <i class='bx bx-hide password-toggle' id="passwordToggle" title="Show password"></i>
             </div>
           </div>
           
@@ -516,12 +521,12 @@
         const passwordInput = document.getElementById('password');
         const passwordToggle = document.getElementById('passwordToggle');
         
-        // FIXED: Password visibility toggle functionality with wrapper approach
+        // BULLETPROOF: Password visibility toggle - just change classes, CSS handles the rest
         passwordToggle.addEventListener('click', function() {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
             
-            // Toggle icon classes
+            // Simple class toggle - aggressive CSS will keep it in place
             if (type === 'text') {
                 passwordToggle.classList.remove('bx-hide');
                 passwordToggle.classList.add('bx-show');
@@ -531,9 +536,6 @@
                 passwordToggle.classList.add('bx-hide');
                 passwordToggle.setAttribute('title', 'Show password');
             }
-            
-            // No need to force positioning - wrapper handles it
-            console.log('Password visibility toggled to:', type);
         });
         
         function showError(message) {
