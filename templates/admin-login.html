@@ -115,137 +115,55 @@
       margin: 5px 0 0 0;
     }
 
-    .input-box {
-      position: relative;
-      width: 100%;
-      height: 50px;
-      margin: 30px 0;
-    }
+    
+   .input-box {
+   position: relative;
+   width: 100%;
+   height: 50px;
+   margin: 30px 0;
+   }
 
-    .input-box input {
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      border: 2px solid rgba(255, 255, 255, .2);
-      border-radius: 40px;
-      font-size: 16px;
-      color: #fff;
-      box-sizing: border-box;
-    }
+  .input-box input {
+   width: 100%;
+   height: 100%;
+   background: transparent;
+   border: none;
+   outline: none;
+   border: 2px solid rgba(255, 255, 255, .2);
+   border-radius: 40px;
+   font-size: 16px;
+   color: #fff;
+   padding: 15px 45px 15px 45px; /* leave space for both icons */
+   box-sizing: border-box;
+  }
 
-    .input-box input::placeholder {
-      color: #fff;
-    }
+ .input-box .bxs-envelope,
+ .input-box .bxs-lock-alt {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+  pointer-events: none;
+  }
 
-    /* Email and lock icons positioning (left side) */
-    .input-box .bxs-envelope,
-    .input-box .bxs-lock-alt {
-      position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 18px;
-      color: rgba(255, 255, 255, 0.7);
-      z-index: 1;
-      pointer-events: none;
-    }
+.input-box .password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  z-index: 2;
+}
 
-    /* BULLETPROOF: Password toggle with absolute positioning that NEVER moves */
-    .input-box .password-toggle {
-      position: absolute !important;
-      right: 20px !important;
-      top: 50% !important;
-      transform: translateY(-50%) !important;
-      font-size: 18px !important;
-      color: rgba(255, 255, 255, 0.7) !important;
-      cursor: pointer !important;
-      z-index: 999 !important;
-      transition: color 0.3s ease !important;
-      width: 18px !important;
-      height: 18px !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: none !important;
-      background: none !important;
-      outline: none !important;
-      box-shadow: none !important;
-      text-decoration: none !important;
-      vertical-align: baseline !important;
-      line-height: 1 !important;
-      float: none !important;
-      clear: none !important;
-    }
+.input-box .password-toggle:hover {
+  color: rgba(255, 255, 255, 1);
+}
 
-    /* Force override for BOTH icon states - nuclear option */
-    .input-box .password-toggle.bx-hide,
-    .input-box .password-toggle.bx-show,
-    .input-box .password-toggle:before,
-    .input-box .password-toggle:after {
-      position: absolute !important;
-      right: 20px !important;
-      top: 50% !important;
-      transform: translateY(-50%) !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      left: auto !important;
-      bottom: auto !important;
-      float: none !important;
-      clear: none !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      width: 18px !important;
-      height: 18px !important;
-      font-size: 18px !important;
-      line-height: 1 !important;
-      text-align: center !important;
-      vertical-align: baseline !important;
-    }
-
-    .input-box .password-toggle:hover {
-      color: rgba(255, 255, 255, 0.9) !important;
-    }
-
-    /* Make sure input focus doesn't affect toggle position */
-    .input-box input:focus + .bxs-lock-alt + .password-toggle,
-    .input-box input:focus ~ .password-toggle {
-      position: absolute !important;
-      right: 20px !important;
-      top: 50% !important;
-      transform: translateY(-50%) !important;
-    }
-
-    /* Input padding adjustments - consistent spacing */
-    .input-box input[type="email"] {
-      padding: 15px 25px 15px 55px;
-    }
-
-    .input-box input[type="password"],
-    .input-box input[type="text"].password-field {
-      padding: 15px 55px 15px 55px;
-    }
-
-    .input-box input:focus {
-      border-color: #4CAF50;
-      box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-    }
-
-    .input-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 500;
-    }
 
     .btn {
       width: 100%;
