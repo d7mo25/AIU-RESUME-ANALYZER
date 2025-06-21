@@ -97,16 +97,16 @@
       color: rgba(255, 255, 255, 0.7);
     }
 
-    /* Lock icon positioning (left side) */
+    /* Lock and envelope icons positioning (left side) */
     .input-box .bxs-lock-alt,
     .input-box .bxs-envelope {
-      right: 15px;
+      left: 15px;
       z-index: 1;
     }
 
     /* Password toggle positioning (right side) */
     .password-toggle {
-      right: 45px;
+      right: 15px;
       cursor: pointer;
       z-index: 2;
       transition: color 0.3s ease;
@@ -119,12 +119,14 @@
     /* Adjust input padding for password field to accommodate both icons */
     .input-box input[type="password"],
     .input-box input[type="text"] {
-      padding-right: 80px;
+      padding-left: 45px;
+      padding-right: 45px;
     }
 
     /* Regular input padding for email field */
     .input-box input[type="email"] {
-      padding-right: 45px;
+      padding-left: 45px;
+      padding-right: 15px;
     }
   </style>
 </head>
