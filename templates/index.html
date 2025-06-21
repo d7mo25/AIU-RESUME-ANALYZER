@@ -95,28 +95,29 @@
       box-sizing: border-box;
     }
 
-    .input-box i {
+    /* Lock and envelope icons positioning (left side) */
+    .input-box .bxs-lock-alt,
+    .input-box .bxs-envelope {
       position: absolute;
+      left: 20px;
       top: 50%;
       transform: translateY(-50%);
       font-size: 18px;
       color: rgba(255, 255, 255, 0.7);
-      pointer-events: none; /* Prevent icons from blocking input clicks */
-    }
-
-    /* Lock and envelope icons positioning (left side) */
-    .input-box .bxs-lock-alt,
-    .input-box .bxs-envelope {
-      left: 20px;
       z-index: 1;
+      pointer-events: none; /* Only disable pointer events for these icons */
     }
 
     /* Password toggle positioning (right side) */
     .password-toggle {
+      position: absolute;
       right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.7);
       cursor: pointer;
       z-index: 2;
-      pointer-events: auto; /* Allow clicking on toggle */
       transition: color 0.3s ease;
     }
 
