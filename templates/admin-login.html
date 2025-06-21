@@ -132,7 +132,6 @@
       border-radius: 40px;
       font-size: 16px;
       color: #fff;
-      padding: 20px 45px 20px 20px;
       box-sizing: border-box;
     }
 
@@ -140,12 +139,44 @@
       color: #fff;
     }
 
-    .input-box i {
+    /* Email and lock icons positioning (left side) */
+    .input-box .bxs-envelope,
+    .input-box .bxs-lock-alt {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Password toggle positioning (right side) */
+    .password-toggle {
       position: absolute;
       right: 20px;
       top: 50%;
       transform: translateY(-50%);
       font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      z-index: 2;
+      transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Input padding adjustments */
+    .input-box input[type="email"] {
+      padding: 20px 20px 20px 50px;
+    }
+
+    .input-box input[type="password"],
+    .input-box input[type="text"].password-field {
+      padding: 20px 50px 20px 50px;
     }
 
     .input-box input:focus {
@@ -398,6 +429,7 @@
             <div class="input-box">
               <i class='bx bxs-lock-alt'></i>
               <input type="password" id="password" placeholder="Enter password" required>
+              <i class='bx bx-hide password-toggle' id="passwordToggle" title="Show password"></i>
             </div>
           </div>
           
@@ -435,6 +467,25 @@
         const loginBtn = document.getElementById('loginBtn');
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        
+        // Password visibility toggle functionality
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle icon
+            if (type === 'text') {
+                passwordToggle.classList.remove('bx-hide');
+                passwordToggle.classList.add('bx-show');
+                passwordToggle.setAttribute('title', 'Hide password');
+            } else {
+                passwordToggle.classList.remove('bx-show');
+                passwordToggle.classList.add('bx-hide');
+                passwordToggle.setAttribute('title', 'Show password');
+            }
+        });
         
         function showError(message) {
             errorMessage.textContent = message;
