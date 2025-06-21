@@ -108,7 +108,6 @@
       border-radius: 40px;
       font-size: 16px;
       color: #fff;
-      padding: 20px 45px 20px 20px;
       box-sizing: border-box;
     }
 
@@ -116,12 +115,59 @@
       color: #fff;
     }
 
-    .input-box i {
+    /* Standard icons positioning (left side for non-password fields) */
+    .input-box .bxs-user,
+    .input-box .bxs-envelope,
+    .input-box .bxs-phone {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Lock icons positioning (left side for password fields) */
+    .input-box .bxs-lock-alt {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Password toggle positioning (right side) */
+    .password-toggle {
       position: absolute;
       right: 20px;
       top: 50%;
       transform: translateY(-50%);
       font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      z-index: 2;
+      transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Input padding adjustments */
+    .input-box input[type="password"],
+    .input-box input[type="text"].password-field {
+      padding: 20px 50px 20px 50px;
+    }
+
+    .input-box input[type="email"],
+    .input-box input[type="text"]:not(.password-field),
+    .input-box input[type="tel"] {
+      padding: 20px 20px 20px 50px;
     }
 
     .btn {
@@ -346,6 +392,7 @@
               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
               title="Must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number"
             >
+            <i class='bx bx-hide password-toggle' id="passwordToggle" title="Show password"></i>
           </div>
           <div class="password-requirements">
             Must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number
@@ -365,6 +412,7 @@
               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
               title="Must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number"
             >
+            <i class='bx bx-hide password-toggle' id="confirmPasswordToggle" title="Show password"></i>
           </div>
         </div>
         
@@ -391,6 +439,46 @@
     const registerBtn = document.getElementById('registerBtn');
     const errorMessage = document.getElementById('errorMessage');
     const successMessage = document.getElementById('successMessage');
+    
+    // Password visibility toggle functionality
+    const passwordInput = document.getElementById('password');
+    const passwordToggle = document.getElementById('passwordToggle');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const confirmPasswordToggle = document.getElementById('confirmPasswordToggle');
+    
+    // Password toggle for main password field
+    passwordToggle.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Toggle icon
+        if (type === 'text') {
+            passwordToggle.classList.remove('bx-hide');
+            passwordToggle.classList.add('bx-show');
+            passwordToggle.setAttribute('title', 'Hide password');
+        } else {
+            passwordToggle.classList.remove('bx-show');
+            passwordToggle.classList.add('bx-hide');
+            passwordToggle.setAttribute('title', 'Show password');
+        }
+    });
+    
+    // Password toggle for confirm password field
+    confirmPasswordToggle.addEventListener('click', function() {
+        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        confirmPasswordInput.setAttribute('type', type);
+        
+        // Toggle icon
+        if (type === 'text') {
+            confirmPasswordToggle.classList.remove('bx-hide');
+            confirmPasswordToggle.classList.add('bx-show');
+            confirmPasswordToggle.setAttribute('title', 'Hide password');
+        } else {
+            confirmPasswordToggle.classList.remove('bx-show');
+            confirmPasswordToggle.classList.add('bx-hide');
+            confirmPasswordToggle.setAttribute('title', 'Show password');
+        }
+    });
     
     function showError(message) {
       errorMessage.textContent = message;
