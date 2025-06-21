@@ -89,15 +89,26 @@
       position: relative;
     }
 
-    .password-toggle {
+    .input-box i {
       position: absolute;
-      right: 45px;
       top: 50%;
       transform: translateY(-50%);
-      cursor: pointer;
-      color: rgba(255, 255, 255, 0.7);
       font-size: 18px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Lock icon positioning (left side) */
+    .input-box .bxs-lock-alt,
+    .input-box .bxs-envelope {
+      right: 15px;
       z-index: 1;
+    }
+
+    /* Password toggle positioning (right side) */
+    .password-toggle {
+      right: 45px;
+      cursor: pointer;
+      z-index: 2;
       transition: color 0.3s ease;
     }
 
@@ -105,9 +116,15 @@
       color: rgba(255, 255, 255, 0.9);
     }
 
+    /* Adjust input padding for password field to accommodate both icons */
     .input-box input[type="password"],
     .input-box input[type="text"] {
-      padding-right: 75px;
+      padding-right: 80px;
+    }
+
+    /* Regular input padding for email field */
+    .input-box input[type="email"] {
+      padding-right: 45px;
     }
   </style>
 </head>
