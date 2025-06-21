@@ -168,6 +168,12 @@
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
         }
 
+        /* Role select error state */
+        .role-select.error {
+            border-color: #e71d36;
+            box-shadow: 0 0 0 3px rgba(231, 29, 54, 0.1);
+        }
+
         .upload-zone {
             border: 3px dashed #e9ecef;
             border-radius: 12px;
@@ -988,8 +994,8 @@
                             <option value="" disabled selected>-- Select one --</option>
                             <option value="School of Business and Social Sciences">School of Business and Social Sciences</option>
                             <option value="School of Education and Human Sciences">School of Education and Human Sciences</option>
-                            <option value="School of Computing and Informatics">School of Computing and Informatics</option>
                             <option value="Centre for Foundation and General Studies">Centre for Foundation and General Studies</option>
+                            <option value="School of Computing and Informatics">School of Computing and Informatics</option>
                             <option value="Language Centre">Language Centre</option>
                             <option value="IT Centre">IT Centre</option>
                         </select>
@@ -1379,35 +1385,108 @@
             }
         }
         
+        // FIXED: Comprehensive file handling with proper error recovery
         function handleFiles(files) {
             const file = files[0];
             if (!file) return;
             
-            const roleSelect = document.getElementById('roleSelect');
+            console.log('Processing file:', file.name);
             
-            // Validate role selection
+            const roleSelect = document.getElementById('roleSelect');
+            const fileInput = document.getElementById('file-input');
+            
+            // Clear any existing errors first
+            hideError();
+            clearRoleSelectError();
+            
+            // Validate role selection FIRST
             if (!roleSelect || !roleSelect.value) {
-                showError('Please select a role before uploading');
+                console.log('Validation failed: No role selected');
+                
+                // Reset file input immediately
+                if (fileInput) {
+                    fileInput.value = '';
+                }
+                
+                // Hide any preview that might have started showing
+                hideFilePreview();
+                
+                // Show visual error feedback
+                showRoleSelectError();
+                showError('Please select a role before uploading your resume');
                 showToast('Validation Error', 'Please select a role before uploading your resume', 'error');
+                
+                // Focus on role select to guide user
+                if (roleSelect) {
+                    roleSelect.focus();
+                    setTimeout(() => {
+                        roleSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
+                
                 return;
             }
             
-            // Validation
+            // Validate file type
             if (!file.name.toLowerCase().endsWith('.pdf')) {
-                showError('Please upload a PDF file');
+                console.log('Validation failed: Invalid file type');
+                resetFileInput();
+                showError('Please upload a PDF file only');
                 showToast('Invalid File Type', 'Only PDF files are supported', 'error');
                 return;
             }
             
+            // Validate file size
             if (file.size > 5 * 1024 * 1024) {
+                console.log('Validation failed: File too large');
+                resetFileInput();
                 showError('File size exceeds 5MB limit. Please choose a smaller file.');
                 showToast('File Too Large', 'File size must be under 5MB', 'error');
                 return;
             }
             
-            hideError();
+            // All validations passed - proceed with upload
+            console.log('All validations passed, proceeding with upload');
             showPreview(file);
             uploadResume(file);
+        }
+        
+        // NEW: Function to show role select error styling
+        function showRoleSelectError() {
+            const roleSelect = document.getElementById('roleSelect');
+            if (roleSelect) {
+                roleSelect.classList.add('error');
+            }
+        }
+        
+        // NEW: Function to clear role select error styling
+        function clearRoleSelectError() {
+            const roleSelect = document.getElementById('roleSelect');
+            if (roleSelect) {
+                roleSelect.classList.remove('error');
+                
+                // Add listener to clear error when user selects something
+                roleSelect.addEventListener('change', function() {
+                    this.classList.remove('error');
+                }, { once: true });
+            }
+        }
+        
+        // NEW: Function to reset file input and hide preview
+        function resetFileInput() {
+            const fileInput = document.getElementById('file-input');
+            if (fileInput) {
+                fileInput.value = '';
+            }
+            hideFilePreview();
+        }
+        
+        // NEW: Function to hide file preview
+        function hideFilePreview() {
+            const filePreview = document.getElementById('filePreview');
+            if (filePreview) {
+                filePreview.style.display = 'none';
+            }
         }
         
         function showPreview(file) {
@@ -1861,7 +1940,10 @@
             if (mainCard) mainCard.style.display = 'block';
             if (filePreview) filePreview.style.display = 'none';
             if (fileInput) fileInput.value = '';
-            if (roleSelect) roleSelect.value = '';
+            if (roleSelect) {
+                roleSelect.value = '';
+                roleSelect.classList.remove('error'); // Clear any error styling
+            }
             if (progress) {
                 progress.style.width = '0%';
                 progress.style.background = 'linear-gradient(90deg, #4361ee, #4cc9f0)';
