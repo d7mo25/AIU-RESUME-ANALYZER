@@ -152,21 +152,6 @@
             margin-bottom: 30px;
         }
 
-        .role-section label {
-            display: block;
-            margin-bottom: 12px;
-            font-weight: 600;
-            color: #333;
-            font-size: 1.1rem;
-        }
-
-        .role-section .label-subtitle {
-            font-size: 0.9rem;
-            color: #666;
-            font-weight: normal;
-            margin-top: 5px;
-        }
-
         .role-select {
             width: 100%;
             padding: 15px;
@@ -187,19 +172,6 @@
         .role-select.error {
             border-color: #e71d36;
             box-shadow: 0 0 0 3px rgba(231, 29, 54, 0.1);
-        }
-
-        /* Group styling for select options */
-        .role-select optgroup {
-            font-weight: bold;
-            color: #4361ee;
-            font-size: 1rem;
-        }
-
-        .role-select option {
-            padding: 8px;
-            font-weight: normal;
-            color: #333;
         }
 
         .upload-zone {
@@ -834,36 +806,6 @@
             font-size: 0.95rem;
         }
 
-        /* Job info tooltip */
-        .job-info {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #666;
-            display: none;
-        }
-
-        .job-info.show {
-            display: block;
-        }
-
-        .job-info h4 {
-            color: #4361ee;
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-
-        .job-info ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        .job-info li {
-            margin-bottom: 4px;
-        }
-
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
@@ -1047,55 +989,16 @@
                 <!-- Upload Tab -->
                 <div class="tab-content active" id="uploadTab">
                     <div class="role-section">
-                        <label for="roleSelect">
-                            Position You Are Applying For:
-                            <div class="label-subtitle">Select the specific job position that best matches your application</div>
-                        </label>
+                        <label for="roleSelect">You Are Applying For:</label>
                         <select id="roleSelect" class="role-select" required>
-                            <option value="" disabled selected>-- Please select a position --</option>
-                            
-                            <!-- Administrative & Leadership Positions -->
-                            <optgroup label="👑 Administrative & Leadership">
-                                <option value="Dean - School of Business and Social Sciences">Dean - School of Business and Social Sciences</option>
-                            </optgroup>
-                            
-                            <!-- Academic Lecturer Positions -->
-                            <optgroup label="🎓 Academic Lecturers">
-                                <option value="Lecturer (English)">Lecturer (English) - Centre for Foundation and General Studies</option>
-                                <option value="Lecturer (Mathematics)">Lecturer (Mathematics) - Centre for Foundation and General Studies</option>
-                                <option value="Lecturer (Accounting)">Lecturer (Accounting) - Centre for Foundation and General Studies</option>
-                                <option value="Lecturer (Psychology & MPU)">Lecturer (Psychology & MPU) - Centre for Foundation and General Studies</option>
-                                <option value="Lecturer Media and Communication">Lecturer Media and Communication</option>
-                                <option value="Lecturer Computer Sciences">Lecturer Computer Sciences</option>
-                                <option value="Lecturer Human Resources Management">Lecturer Human Resources Management</option>
-                                <option value="Lecturer Marketing">Lecturer Marketing</option>
-                                <option value="Lecturer Social Business/ Social Entrepreneurship">Lecturer Social Business/ Social Entrepreneurship</option>
-                            </optgroup>
-                            
-                            <!-- Teaching Positions -->
-                            <optgroup label="👨‍🏫 Teaching Positions">
-                                <option value="English Teacher - Language Centre">English Teacher - Language Centre</option>
-                            </optgroup>
-                            
-                            <!-- Administrative Support -->
-                            <optgroup label="💼 Administrative Support">
-                                <option value="Executive Human Resources Generalist">Executive, Human Resources Generalist</option>
-                            </optgroup>
-                            
-                            <!-- IT & Technical Positions -->
-                            <optgroup label="💻 IT & Technical">
-                                <option value="IT Technical Project Coordinator">IT Technical Project Coordinator</option>
-                                <option value="IT Support">IT Support</option>
-                            </optgroup>
+                            <option value="" disabled selected>-- Select one --</option>
+                            <option value="School of Business and Social Sciences">School of Business and Social Sciences</option>
+                            <option value="School of Education and Human Sciences">School of Education and Human Sciences</option>
+                            <option value="Centre for Foundation and General Studies">Centre for Foundation and General Studies</option>
+                            <option value="School of Computing and Informatics">School of Computing and Informatics</option>
+                            <option value="Language Centre">Language Centre</option>
+                            <option value="IT Centre">IT Centre</option>
                         </select>
-
-                        <!-- Job Information Display -->
-                        <div class="job-info" id="jobInfo">
-                            <h4 id="jobTitle">Position Details</h4>
-                            <div id="jobDetails">
-                                <!-- Job details will be populated here -->
-                            </div>
-                        </div>
                     </div>
                     
                     <div class="upload-zone" id="dropZone">
@@ -1194,150 +1097,6 @@
         let isLoadingHistory = false;
         let profileDataLoaded = false;
         
-        // Job information data
-        const jobInformation = {
-            "Dean - School of Business and Social Sciences": {
-                title: "Dean - School of Business and Social Sciences",
-                requirements: [
-                    "PhD in Accountancy/Business Studies/Administration/Management/Economics/HR/Marketing",
-                    "Professional certificates (ACCA, CPA, or CIMA)",
-                    "At least 10 years of academic experience",
-                    "Strong leadership and management skills"
-                ],
-                description: "Lead the School of Business with strategic vision and academic excellence"
-            },
-            "Lecturer (English)": {
-                title: "Lecturer (English) - Centre for Foundation and General Studies",
-                requirements: [
-                    "Master's degree in TESL/TESOL/English Language (PhD preferred)",
-                    "At least 3 years teaching experience",
-                    "Trained to teach General Studies (MPU) courses",
-                    "Strong command of English language"
-                ],
-                description: "Teach English at foundation level with passion for education"
-            },
-            "Lecturer (Mathematics)": {
-                title: "Lecturer (Mathematics) - Centre for Foundation and General Studies",
-                requirements: [
-                    "Master's degree in Mathematics or Statistics",
-                    "At least 3 years teaching experience",
-                    "Fluent in English (speaking, writing, teaching)",
-                    "Strong mathematical foundation"
-                ],
-                description: "Deliver high-quality mathematics courses at foundation level"
-            },
-            "Lecturer (Accounting)": {
-                title: "Lecturer (Accounting) - Centre for Foundation and General Studies",
-                requirements: [
-                    "Master's degree in Accounting or Finance",
-                    "Professional qualifications (CPA, ACCA) highly desirable",
-                    "Demonstrated teaching experience at foundation/undergraduate level",
-                    "Strong communication and interpersonal skills"
-                ],
-                description: "Teach foundational accounting courses with practical applications"
-            },
-            "Lecturer (Psychology & MPU)": {
-                title: "Lecturer (Psychology & MPU) - Centre for Foundation and General Studies",
-                requirements: [
-                    "Master's degree in Psychology with MPU curriculum understanding",
-                    "Teaching experience in psychology and MPU subjects",
-                    "Excellent communication and interpersonal skills",
-                    "Fluent in English as medium of instruction"
-                ],
-                description: "Deliver psychology and MPU courses fostering critical thinking"
-            },
-            "Lecturer Media and Communication": {
-                title: "Lecturer Media and Communication",
-                requirements: [
-                    "Master's degree in mass communication",
-                    "2-3 years teaching experience",
-                    "Advanced software and video editing skills",
-                    "Academic/Professional qualifications"
-                ],
-                description: "Develop and teach media and communication courses"
-            },
-            "Lecturer Computer Sciences": {
-                title: "Lecturer Computer Sciences",
-                requirements: [
-                    "PhD/Master's/Bachelor's in Mathematics, Statistics, Data Science, AI, Software Engineering",
-                    "At least 3 years teaching experience",
-                    "Passion for teaching and quality education",
-                    "Experience with IT technologies and teaching methodologies"
-                ],
-                description: "Teach cutting-edge computer science and technology courses"
-            },
-            "Lecturer Human Resources Management": {
-                title: "Lecturer Human Resources Management",
-                requirements: [
-                    "PhD/Master's/Bachelor's in Human Resources Management",
-                    "At least 3 years teaching experience",
-                    "Professional qualifications preferred",
-                    "Experience developing teaching methodologies"
-                ],
-                description: "Educate future HR professionals with practical insights"
-            },
-            "Lecturer Marketing": {
-                title: "Lecturer Marketing",
-                requirements: [
-                    "PhD/Master's/Bachelor's in Marketing",
-                    "At least 3 years teaching experience",
-                    "Passion for teaching and quality education",
-                    "Experience with teaching methodologies and IT technologies"
-                ],
-                description: "Teach modern marketing concepts and strategies"
-            },
-            "Lecturer Social Business/ Social Entrepreneurship": {
-                title: "Lecturer Social Business/ Social Entrepreneurship",
-                requirements: [
-                    "PhD/Master's/Bachelor's in Social Business/Social Entrepreneurship",
-                    "At least 3 years teaching experience",
-                    "Passion for social impact and education",
-                    "Experience developing teaching methodologies"
-                ],
-                description: "Inspire students in social entrepreneurship and business for good"
-            },
-            "English Teacher - Language Centre": {
-                title: "English Teacher - Language Centre",
-                requirements: [
-                    "Bachelor's degree in Education, English, TESOL",
-                    "Previous English teaching experience preferred",
-                    "Strong classroom management skills",
-                    "Excellent communication and interpersonal skills"
-                ],
-                description: "Deliver engaging English lessons including IELTS preparation"
-            },
-            "Executive Human Resources Generalist": {
-                title: "Executive, Human Resources Generalist",
-                requirements: [
-                    "Degree in Human Resource Management/Administration/Management",
-                    "3-5 years HR experience, preferably in higher education",
-                    "Strong knowledge of HR principles and employment laws",
-                    "Proficiency in HR software and Microsoft Office"
-                ],
-                description: "Manage comprehensive HR functions and employee relations"
-            },
-            "IT Technical Project Coordinator": {
-                title: "IT Technical Project Coordinator",
-                requirements: [
-                    "Bachelor's Degree in IT or related fields",
-                    "7-8 years IT project coordination experience",
-                    "In-depth networking technologies knowledge",
-                    "Strong organizational and communication skills"
-                ],
-                description: "Lead IT project coordination with focus on networking initiatives"
-            },
-            "IT Support": {
-                title: "IT Support",
-                requirements: [
-                    "Diploma in IT or related fields",
-                    "2-3 years IT support experience",
-                    "Knowledge of PC/laptop hardware and software",
-                    "Strong problem-solving and customer service skills"
-                ],
-                description: "Provide comprehensive on-site IT support and user assistance"
-            }
-        };
-        
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Resume upload page loaded with token:', jwtToken ? 'Present' : 'Missing');
             
@@ -1362,7 +1121,6 @@
             const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
             const viewHistoryBtn = document.getElementById('viewHistoryBtn');
             const profileForm = document.getElementById('profileForm');
-            const roleSelect = document.getElementById('roleSelect');
             
             // Profile dropdown elements
             const profileToggle = document.getElementById('profileToggle');
@@ -1381,14 +1139,6 @@
                     switchTab(tabName);
                 });
             });
-            
-            // Role selection change handler
-            if (roleSelect) {
-                roleSelect.addEventListener('change', function() {
-                    showJobInformation(this.value);
-                    this.classList.remove('error'); // Clear error styling
-                });
-            }
             
             // Upload event listeners
             if (browseBtn) browseBtn.addEventListener('click', () => fileInput.click());
@@ -1442,32 +1192,6 @@
             
             // Load user data and history
             initializeUserData();
-        }
-        
-        function showJobInformation(jobKey) {
-            const jobInfo = document.getElementById('jobInfo');
-            const jobTitle = document.getElementById('jobTitle');
-            const jobDetails = document.getElementById('jobDetails');
-            
-            if (!jobKey || !jobInformation[jobKey]) {
-                if (jobInfo) jobInfo.classList.remove('show');
-                return;
-            }
-            
-            const job = jobInformation[jobKey];
-            
-            if (jobTitle) jobTitle.textContent = job.title;
-            if (jobDetails) {
-                jobDetails.innerHTML = `
-                    <p><strong>Description:</strong> ${job.description}</p>
-                    <p><strong>Key Requirements:</strong></p>
-                    <ul>
-                        ${job.requirements.map(req => `<li>${req}</li>`).join('')}
-                    </ul>
-                `;
-            }
-            
-            if (jobInfo) jobInfo.classList.add('show');
         }
         
         // NEW FUNCTION: Handle showing main card and switching to history
@@ -1689,8 +1413,8 @@
                 
                 // Show visual error feedback
                 showRoleSelectError();
-                showError('Please select a position before uploading your resume');
-                showToast('Validation Error', 'Please select a position before uploading your resume', 'error');
+                showError('Please select a role before uploading your resume');
+                showToast('Validation Error', 'Please select a role before uploading your resume', 'error');
                 
                 // Focus on role select to guide user
                 if (roleSelect) {
@@ -2211,7 +1935,6 @@
             const progressPercent = document.getElementById('progressPercent');
             const spinner = document.getElementById('spinner');
             const mainCard = document.querySelector('.card');
-            const jobInfo = document.getElementById('jobInfo');
             
             if (successSection) successSection.style.display = 'none';
             if (mainCard) mainCard.style.display = 'block';
@@ -2221,7 +1944,6 @@
                 roleSelect.value = '';
                 roleSelect.classList.remove('error'); // Clear any error styling
             }
-            if (jobInfo) jobInfo.classList.remove('show'); // Hide job info
             if (progress) {
                 progress.style.width = '0%';
                 progress.style.background = 'linear-gradient(90deg, #4361ee, #4cc9f0)';
