@@ -322,12 +322,12 @@
 
         .modal-content {
             background-color: white;
-            margin: 2% auto;
+            margin: 5% auto;
             padding: 0;
             border-radius: 10px;
-            width: 95%;
-            max-width: 1200px;
-            max-height: 90%;
+            width: 90%;
+            max-width: 900px;
+            max-height: 80%;
             overflow-y: auto;
             position: relative;
         }
@@ -411,7 +411,7 @@
 
         .category-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -578,119 +578,6 @@
             color: #333;
             font-size: 1rem;
         }
-
-        /* Job-specific analysis styling */
-        .job-analysis-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-
-        .job-analysis-section h3 {
-            color: white;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-        }
-
-        .job-match-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .job-match-card {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .job-match-value {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .job-match-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .priority-categories {
-            background: white;
-            color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .priority-categories h4 {
-            color: #1e3c72;
-            margin-bottom: 15px;
-        }
-
-        .priority-tag {
-            display: inline-block;
-            background: #1e3c72;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin: 3px;
-        }
-
-        .role-badge {
-            background: #1e3c72;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
-        /* Position-specific styling */
-        .position-dean { border-left-color: #8b5cf6; }
-        .position-lecturer { border-left-color: #3b82f6; }
-        .position-teacher { border-left-color: #10b981; }
-        .position-admin { border-left-color: #f59e0b; }
-        .position-it { border-left-color: #ef4444; }
-
-        /* Export button styling */
-        .export-section {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .export-btn {
-            background: #10b981;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .export-btn:hover {
-            background: #059669;
-            transform: translateY(-1px);
-        }
-
-        .export-btn:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-            transform: none;
-        }
     </style>
 </head>
 <body>
@@ -779,12 +666,6 @@
             <div id="resumesSection" style="display: none;">
                 <h2 class="dashboard-title">Resume Management</h2>
                 
-                <div class="export-section">
-                    <button class="export-btn" id="exportBtn">
-                        <i class="fas fa-download"></i> Export to CSV
-                    </button>
-                </div>
-                
                 <input type="text" id="searchInput" class="search-box" placeholder=" Search resumes...">
                 
                 <table class="data-table" id="resumesTable">
@@ -792,10 +673,10 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Position Applied</th>
                             <th>Upload Date</th>
                             <th>Status</th>
                             <th>Score</th>
+                            <th>Applied For</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -819,8 +700,8 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Position Applied</th>
                             <th>Upload Date</th>
+                            <th>Applied For</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -878,24 +759,6 @@
         let allResumes = [];
         let currentSection = 'dashboard';
         
-        // Position category mapping for styling
-        const positionCategories = {
-            'Dean - School of Business and Social Sciences': 'dean',
-            'Lecturer (English)': 'lecturer',
-            'Lecturer (Mathematics)': 'lecturer',
-            'Lecturer (Accounting)': 'lecturer',
-            'Lecturer (Psychology & MPU)': 'lecturer',
-            'Lecturer Media and Communication': 'lecturer',
-            'Lecturer Computer Sciences': 'lecturer',
-            'Lecturer Human Resources Management': 'lecturer',
-            'Lecturer Marketing': 'lecturer',
-            'Lecturer Social Business/ Social Entrepreneurship': 'lecturer',
-            'English Teacher - Language Centre': 'teacher',
-            'Executive Human Resources Generalist': 'admin',
-            'IT Technical Project Coordinator': 'it',
-            'IT Support': 'it'
-        };
-        
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Dashboard loaded with token:', jwtToken ? 'Present' : 'Missing');
             
@@ -922,7 +785,6 @@
             document.getElementById('refreshBtn').addEventListener('click', handleRefresh);
             document.getElementById('searchInput').addEventListener('input', handleSearch);
             document.getElementById('addAdminForm').addEventListener('submit', handleAddAdmin);
-            document.getElementById('exportBtn').addEventListener('click', handleExportCSV);
             
             // Menu navigation
             document.querySelectorAll('.menu-item').forEach(item => {
@@ -991,45 +853,6 @@
             );
             
             populateResumesTable(filtered);
-        }
-        
-        async function handleExportCSV() {
-            const exportBtn = document.getElementById('exportBtn');
-            
-            try {
-                exportBtn.disabled = true;
-                exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
-                
-                const response = await fetch('/api/admin/resumes/export', {
-                    headers: {
-                        'Authorization': `Bearer ${jwtToken}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Export failed');
-                }
-                
-                // Create download link
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `resume_data_export_${new Date().toISOString().split('T')[0]}.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-                
-                showToast('Export completed successfully', 'success');
-                
-            } catch (error) {
-                console.error('Export error:', error);
-                showToast('Export failed', 'error');
-            } finally {
-                exportBtn.disabled = false;
-                exportBtn.innerHTML = '<i class="fas fa-download"></i> Export to CSV';
-            }
         }
         
         function switchSection(section) {
@@ -1146,26 +969,19 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Position Applied</th>
                             <th>Upload Date</th>
                             <th>Status</th>
                             <th>Score</th>
+                            <th>Role</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${recent.map(resume => {
                             const date = resume.upload_date || '';
                             const isAnalyzed = resume.ats_score != null;
-                            const positionCategory = positionCategories[resume.applied_role] || 'general';
-                            
                             return `
                             <tr>
                                 <td>${resume.name || 'N/A'}</td>
-                                <td>
-                                    <span class="role-badge position-${positionCategory}">
-                                        ${resume.applied_role || 'Not specified'}
-                                    </span>
-                                </td>
                                 <td>${date.split(' ')[0] || 'N/A'}</td>
                                 <td>
                                     <span class="status-badge ${isAnalyzed ? 'status-analyzed' : 'status-pending'}">
@@ -1173,6 +989,7 @@
                                     </span>
                                 </td>
                                 <td><strong>${isAnalyzed ? resume.ats_score + '%' : 'N/A'}</strong></td>
+                                <td>${resume.applied_role || 'N/A'}</td>
                             </tr>
                         `}).join('')}
                     </tbody>
@@ -1240,17 +1057,11 @@
                 const date = resume.upload_date || '';
                 const displayDate = date ? date.split(' ')[0] : 'N/A';
                 const isAnalyzed = resume.ats_score != null;
-                const positionCategory = positionCategories[resume.applied_role] || 'general';
                 
                 return `
                 <tr>
                     <td>${resume.name || 'N/A'}</td>
                     <td>${resume.email || 'N/A'}</td>
-                    <td>
-                        <span class="role-badge position-${positionCategory}">
-                            ${resume.applied_role || 'Not specified'}
-                        </span>
-                    </td>
                     <td>${displayDate}</td>
                     <td>
                         <span class="status-badge ${isAnalyzed ? 'status-analyzed' : 'status-pending'}">
@@ -1258,6 +1069,7 @@
                         </span>
                     </td>
                     <td><strong>${isAnalyzed ? resume.ats_score + '%' : 'N/A'}</strong></td>
+                    <td>${resume.applied_role || 'Not specified'}</td>
                     <td>
                         ${!isAnalyzed ? `
                             <button class="action-btn analyze-btn" onclick="analyzeResume('${resume.id}')">
@@ -1335,18 +1147,13 @@
                 const date = resume.upload_date || '';
                 const displayDate = date ? date.split(' ')[0] : 'N/A';
                 const isAnalyzed = resume.ats_score != null;
-                const positionCategory = positionCategories[resume.applied_role] || 'general';
                 
                 return `
                 <tr>
                     <td>${resume.name || 'N/A'}</td>
                     <td>${resume.email || 'N/A'}</td>
-                    <td>
-                        <span class="role-badge position-${positionCategory}">
-                            ${resume.applied_role || 'Not specified'}
-                        </span>
-                    </td>
                     <td>${displayDate}</td>
+                    <td>${resume.applied_role || 'Not specified'}</td>
                     <td>
                         <span class="status-badge ${isAnalyzed ? 'status-analyzed' : 'status-pending'}">
                             ${isAnalyzed ? 'Analyzed (' + resume.ats_score + '%)' : 'Pending Analysis'}
@@ -1559,8 +1366,6 @@
             
             const analysisData = resumeData.analysis_data;
             const extractionResults = analysisData.extraction_results || {};
-            const jobAnalysis = analysisData.job_analysis || {};
-            const positionCategory = positionCategories[resumeData.applied_role] || 'general';
 
             modalBody.innerHTML = `
                 <div class="score-display">
@@ -1578,38 +1383,14 @@
                         <div class="info-value">${resumeData.email || 'N/A'}</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">💼 Applied Position</div>
-                        <div class="info-value">
-                            <span class="role-badge position-${positionCategory}">
-                                ${resumeData.applied_role || 'N/A'}
-                            </span>
-                        </div>
+                        <div class="info-label">💼 Applied Role</div>
+                        <div class="info-value">${resumeData.applied_role || 'N/A'}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">📅 Analysis Date</div>
                         <div class="info-value">${resumeData.analysis_date || 'N/A'}</div>
                     </div>
                 </div>
-
-                ${jobAnalysis ? `
-                <div class="job-analysis-section">
-                    <h3>🎯 Job-Specific Analysis</h3>
-                    <div class="job-match-grid">
-                        <div class="job-match-card">
-                            <div class="job-match-value">${jobAnalysis.job_match_percentage || 0}%</div>
-                            <div class="job-match-label">Job Match Score</div>
-                        </div>
-                        <div class="job-match-card">
-                            <div class="job-match-value">+${jobAnalysis.required_keyword_bonus || 0}</div>
-                            <div class="job-match-label">Required Keywords Bonus</div>
-                        </div>
-                        <div class="job-match-card">
-                            <div class="job-match-value">+${jobAnalysis.bonus_keyword_score || 0}</div>
-                            <div class="job-match-label">Position-Specific Bonus</div>
-                        </div>
-                    </div>
-                </div>
-                ` : ''}
                 
                 ${analysisData.chart ? `
                 <div class="analysis-section">
