@@ -280,40 +280,175 @@ class DashboardStats(BaseModel):
     total_resumes: int
     average_score: float
 
-# Updated Keyword Categories aligned with Streamlit version
+# Updated Keyword Categories aligned with AIU job positions from PDF
 KEYWORD_CATEGORIES = {
-    "Technical Skills": [
-        "LMS", "Moodle", "Blackboard", "management",
-        "E-learning platforms", "SPSS", "Statistical software", "Excel", "Microsoft Excel",
-        "Microsoft Office", "Qualitative analysis", "Research methodology",
-        "Teaching tools", "Academic software", "Learning analytics"
+    "Education & Qualifications": [
+        "PhD", "Doctor of Philosophy", "Doctorate", "Master's degree", "Master", "Bachelor's degree", "Bachelor",
+        "ACCA", "CPA", "CIMA", "Professional certification", "Professional qualification",
+        "TESL", "TESOL", "English Language", "Teaching qualification",
+        "Chartered qualification", "Professional certificate",
+        "Higher education", "University", "College", "Academic qualification"
     ],
-    "Soft Skills": [
-        "Communication", "Leadership", "Teamwork", "Adaptability", "Problem-solving"
+    "Teaching & Academic Experience": [
+        "Teaching experience", "Academic experience", "Lecturer", "Professor", "Instructor",
+        "Curriculum development", "Course development", "Lesson planning", "Assessment",
+        "Student supervision", "Research supervision", "Academic mentorship",
+        "Classroom management", "Educational methodology", "Teaching methodology",
+        "Face-to-face teaching", "Online teaching", "Blended learning",
+        "Academic administration", "Academic leadership"
     ],
-    "Work Experience": [
-        "University lecturer", "Professor role",
-        "Course development", "Lecture preparation",
-        "Student mentorship", "Research supervision", "Teaching assistant",
-        "Administrative experience", "Technical support", "Project management", "Office management",
-        "Data analysis", "Systems administrator", "Technical documentation",
-        "Operations management", "Fresh graduate", "Internship",
-        "Industrial training"
+    "Technical & Digital Skills": [
+        "Microsoft Office", "Excel", "PowerPoint", "Word", "SPSS", "Statistical software",
+        "Programming", "Software development", "Database management", "Data analysis",
+        "Web development", "Mobile development", "Cloud computing", "Cybersecurity",
+        "Artificial Intelligence", "Machine Learning", "Data mining", "Analytics",
+        "Video editing", "Media production", "Digital marketing", "Social media",
+        "LMS", "Moodle", "Blackboard", "E-learning platforms", "Educational technology",
+        "Project management software", "CRM", "HRIS", "HR software"
+    ],
+    "Research & Publications": [
+        "Research experience", "Research methodology", "Qualitative research", "Quantitative research",
+        "Publications", "Peer-reviewed", "Journal articles", "Conference papers",
+        "Research grants", "Research projects", "Academic writing", "Scholarly publications",
+        "Literature review", "Data collection", "Research design", "Statistical analysis"
+    ],
+    "Professional & Industry Experience": [
+        "Industry experience", "Professional experience", "Consulting", "Business analysis",
+        "Project management", "Team leadership", "Management experience",
+        "Financial management", "Accounting experience", "Auditing", "Taxation",
+        "Human resources", "Recruitment", "Training and development", "Performance management",
+        "Marketing experience", "Digital marketing", "Brand management", "Sales",
+        "IT support", "Technical support", "System administration", "Network management",
+        "Business development", "Strategic planning", "Operations management"
+    ],
+    "Soft Skills & Competencies": [
+        "Communication skills", "Interpersonal skills", "Leadership", "Teamwork",
+        "Problem-solving", "Critical thinking", "Analytical thinking", "Creativity",
+        "Adaptability", "Initiative", "Time management", "Organizational skills",
+        "Presentation skills", "Public speaking", "Collaboration", "Negotiation",
+        "Customer service", "Stakeholder management", "Cross-cultural communication"
     ],
     "Language Proficiency": [
-        "English"
+        "English", "Fluent in English", "English proficiency", "Written English", "Spoken English",
+        "Bilingual", "Multilingual", "IELTS", "TOEFL", "Language skills",
+        "Communication in English", "English as medium of instruction"
     ],
-    "Achievements": [
-        "Research grants", "Employee recognition", "Dean's list", "Competition achievements",
-        "Certifications"
+    "Specific Job Skills": [
+        # Business & Finance
+        "Financial accounting", "Management accounting", "Cost accounting", "Financial reporting",
+        "Budget management", "Financial analysis", "Investment analysis", "Risk management",
+        # Psychology & Education
+        "Psychology", "Educational psychology", "Counseling", "Student support", "Academic advising",
+        "Mata Pelajaran Umum", "MPU", "General Studies", "Ethics", "Philosophy",
+        # IT & Technology
+        "Networking", "System integration", "Database design", "Software engineering",
+        "Information systems", "Cybersecurity", "Cloud services", "Technical documentation",
+        # Media & Communication
+        "Media production", "Content creation", "Journalism", "Mass communication",
+        "Public relations", "Social media management", "Digital content",
+        # HR & Administration
+        "Payroll management", "Employee relations", "Industrial relations", "Labour law",
+        "Benefits administration", "Performance appraisal", "Training coordination"
     ],
-    "Publications": [
-        "Peer-reviewed journal articles", "Conference proceedings", "Books", "Blog",
-        "Academic articles", "Research papers"
+    "Leadership & Management": [
+        "Team leadership", "Management experience", "Supervisory experience", "Department management",
+        "Strategic leadership", "Change management", "Organizational development",
+        "Budget management", "Resource management", "Staff development",
+        "Decision making", "Conflict resolution", "Performance management",
+        "Administrative experience", "Executive experience"
     ],
     "Candidate Profile": [
         "Full Name", "Email", "Phone", "Address", "LinkedIn"
     ]
+}
+
+# Updated maximum scores for each category
+MAX_SCORES = {
+    "Education & Qualifications": 15,
+    "Teaching & Academic Experience": 15,
+    "Technical & Digital Skills": 12,
+    "Research & Publications": 8,
+    "Professional & Industry Experience": 10,
+    "Soft Skills & Competencies": 10,
+    "Language Proficiency": 8,
+    "Specific Job Skills": 12,
+    "Leadership & Management": 10,
+    "Sections Presence": 20,
+    "Candidate Profile": 15
+}
+
+# Job-specific keyword mappings for better analysis
+JOB_SPECIFIC_KEYWORDS = {
+    "Dean - School of Business and Social Sciences": {
+        "priority_categories": ["Education & Qualifications", "Leadership & Management", "Teaching & Academic Experience"],
+        "required_keywords": ["PhD", "Leadership", "Academic experience", "Administration"],
+        "bonus_keywords": ["ACCA", "CPA", "Business Studies", "Economics", "Management"]
+    },
+    "Lecturer (English)": {
+        "priority_categories": ["Education & Qualifications", "Teaching & Academic Experience", "Language Proficiency"],
+        "required_keywords": ["Master's degree", "TESL", "TESOL", "Teaching experience", "English"],
+        "bonus_keywords": ["General Studies", "MPU", "Educational methodology"]
+    },
+    "Lecturer (Mathematics)": {
+        "priority_categories": ["Education & Qualifications", "Teaching & Academic Experience", "Technical & Digital Skills"],
+        "required_keywords": ["Master's degree", "Mathematics", "Statistics", "Teaching experience"],
+        "bonus_keywords": ["SPSS", "Statistical software", "Data analysis"]
+    },
+    "Lecturer (Accounting)": {
+        "priority_categories": ["Education & Qualifications", "Teaching & Academic Experience", "Specific Job Skills"],
+        "required_keywords": ["Master's degree", "Accounting", "Teaching experience"],
+        "bonus_keywords": ["CPA", "ACCA", "Financial accounting", "Management accounting"]
+    },
+    "Lecturer (Psychology & MPU)": {
+        "priority_categories": ["Education & Qualifications", "Teaching & Academic Experience", "Specific Job Skills"],
+        "required_keywords": ["Master's degree", "Psychology", "Teaching experience", "MPU"],
+        "bonus_keywords": ["Educational psychology", "General Studies", "Ethics"]
+    },
+    "Lecturer Computer Sciences": {
+        "priority_categories": ["Education & Qualifications", "Technical & Digital Skills", "Teaching & Academic Experience"],
+        "required_keywords": ["Degree", "Programming", "Software", "Teaching experience"],
+        "bonus_keywords": ["Machine Learning", "AI", "Cybersecurity", "Database", "Cloud computing"]
+    },
+    "Lecturer Media and Communication": {
+        "priority_categories": ["Education & Qualifications", "Teaching & Academic Experience", "Technical & Digital Skills"],
+        "required_keywords": ["Master's degree", "Mass communication", "Teaching experience"],
+        "bonus_keywords": ["Video editing", "Media production", "Digital marketing"]
+    },
+    "Lecturer Human Resources Management": {
+        "priority_categories": ["Education & Qualifications", "Teaching & Academic Experience", "Professional & Industry Experience"],
+        "required_keywords": ["Degree", "Human Resources", "Teaching experience"],
+        "bonus_keywords": ["HR", "Employee relations", "Training and development"]
+    },
+    "Lecturer Marketing": {
+        "priority_categories": ["Education & Qualifications", "Teaching & Academic Experience", "Professional & Industry Experience"],
+        "required_keywords": ["Marketing", "Teaching experience", "Degree"],
+        "bonus_keywords": ["Digital marketing", "Brand management", "Sales", "Business development"]
+    },
+    "Lecturer Social Business/ Social Entrepreneurship": {
+        "priority_categories": ["Education & Qualifications", "Teaching & Academic Experience", "Professional & Industry Experience"],
+        "required_keywords": ["Degree", "Teaching experience", "Social"],
+        "bonus_keywords": ["Entrepreneurship", "Business development", "Social impact"]
+    },
+    "English Teacher - Language Centre": {
+        "priority_categories": ["Education & Qualifications", "Teaching & Academic Experience", "Language Proficiency"],
+        "required_keywords": ["Education", "English", "Teaching", "TESOL"],
+        "bonus_keywords": ["IELTS", "Language skills", "Curriculum development"]
+    },
+    "Executive Human Resources Generalist": {
+        "priority_categories": ["Professional & Industry Experience", "Specific Job Skills", "Soft Skills & Competencies"],
+        "required_keywords": ["Human resources", "HR", "Employee relations", "Administration"],
+        "bonus_keywords": ["Payroll", "HRIS", "Labour law", "Benefits administration"]
+    },
+    "IT Technical Project Coordinator": {
+        "priority_categories": ["Technical & Digital Skills", "Professional & Industry Experience", "Leadership & Management"],
+        "required_keywords": ["IT", "Project management", "Networking", "Technical"],
+        "bonus_keywords": ["Project coordination", "System administration", "Technical documentation"]
+    },
+    "IT Support": {
+        "priority_categories": ["Technical & Digital Skills", "Professional & Industry Experience", "Soft Skills & Competencies"],
+        "required_keywords": ["IT support", "Technical support", "Hardware", "Software"],
+        "bonus_keywords": ["Troubleshooting", "Customer service", "Network management"]
+    }
 }
 
 # Define section patterns for detection
@@ -339,17 +474,6 @@ SECTION_PATTERNS = {
 REQUIRED_SECTIONS = [
     "Candidate Profile", "Education", "Skills", "Experience"
 ]
-
-# Define maximum scores for each category (aligned with Streamlit version)
-MAX_SCORES = {
-    "Technical Skills": 10,
-    "Soft Skills": 15,
-    "Work Experience": 10,
-    "Language Proficiency": 10,
-    "Achievements": 5,
-    "Publications": 10,
-    "Sections Presence": 25,
-    "Candidate Profile": 15 }
 
 # Utility functions
 def create_jwt_token(user_data: dict) -> str:
@@ -480,9 +604,16 @@ def detect_sections_presence(text):
 
     return found_sections
 
-def calculate_ats_score(extraction_results, sections_found):
-    """Calculate ATS score aligned with Streamlit version"""
-    # Calculate category-wise score based on MAX_SCORES
+def calculate_job_specific_score(extraction_results, sections_found, applied_role):
+    """Calculate ATS score with job-specific weighting"""
+    
+    # Get job-specific configuration
+    job_config = JOB_SPECIFIC_KEYWORDS.get(applied_role, {})
+    priority_categories = job_config.get("priority_categories", [])
+    required_keywords = job_config.get("required_keywords", [])
+    bonus_keywords = job_config.get("bonus_keywords", [])
+    
+    # Calculate base category scores
     category_scores = {}
     for category, found_keywords in extraction_results.items():
         max_score = MAX_SCORES.get(category, 0)
@@ -490,49 +621,122 @@ def calculate_ats_score(extraction_results, sections_found):
         total_possible = len(KEYWORD_CATEGORIES.get(category, []))
         
         if total_possible > 0:
-            category_scores[category] = round((found_count / total_possible) * max_score, 2)
+            base_score = (found_count / total_possible) * max_score
+            
+            # Apply priority weighting for job-specific categories
+            if category in priority_categories:
+                base_score *= 1.2  # 20% bonus for priority categories
+            
+            category_scores[category] = round(min(base_score, max_score), 2)
         else:
             category_scores[category] = 0
-
+    
     # Calculate sections presence score
     sections_score = (len(sections_found) / len(REQUIRED_SECTIONS)) * MAX_SCORES["Sections Presence"]
     category_scores["Sections Presence"] = round(sections_score, 2)
-
-    # Total score is sum of all category scores
-    total_score = sum(category_scores.values())
     
-    return round(min(total_score, 100), 2), category_scores
+    # Calculate bonus for required keywords
+    all_found_keywords = []
+    for keywords in extraction_results.values():
+        all_found_keywords.extend([kw.lower() for kw in keywords])
+    
+    required_keyword_bonus = 0
+    for req_keyword in required_keywords:
+        if any(req_keyword.lower() in found_kw for found_kw in all_found_keywords):
+            required_keyword_bonus += 2  # 2 points per required keyword found
+    
+    # Calculate bonus for job-specific keywords
+    bonus_keyword_score = 0
+    for bonus_keyword in bonus_keywords:
+        if any(bonus_keyword.lower() in found_kw for found_kw in all_found_keywords):
+            bonus_keyword_score += 1  # 1 point per bonus keyword found
+    
+    # Total score calculation
+    base_total = sum(category_scores.values())
+    final_score = base_total + required_keyword_bonus + bonus_keyword_score
+    
+    return round(min(final_score, 100), 2), category_scores, {
+        "required_keyword_bonus": required_keyword_bonus,
+        "bonus_keyword_score": bonus_keyword_score,
+        "job_match_percentage": min((required_keyword_bonus / max(len(required_keywords) * 2, 1)) * 100, 100)
+    }
 
 def create_keyword_chart(extraction_results, sections_found, applied_role: str):
-    """Create keyword analysis chart"""
+    """Create enhanced keyword analysis chart with job-specific insights"""
     # Include sections in the comparison
     categories = list(extraction_results.keys()) + ["Sections Presence"]
     found_counts = [len(extraction_results[cat]) for cat in extraction_results.keys()] + [len(sections_found)]
     total_keywords = [len(KEYWORD_CATEGORIES[cat]) for cat in extraction_results.keys()] + [len(REQUIRED_SECTIONS)]
     
-    # Calculate scores for display
-    _, category_scores = calculate_ats_score(extraction_results, sections_found)
+    # Calculate scores for display using job-specific scoring
+    ats_score, category_scores, job_analysis = calculate_job_specific_score(extraction_results, sections_found, applied_role)
     scores = [category_scores[cat] for cat in categories]
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    # Get job-specific configuration for priority highlighting
+    job_config = JOB_SPECIFIC_KEYWORDS.get(applied_role, {})
+    priority_categories = job_config.get("priority_categories", [])
+
+    fig, ax = plt.subplots(figsize=(14, 10))
     y_pos = np.arange(len(categories))
 
+    # Create color scheme based on priority categories
+    bar_colors = []
+    for cat in categories:
+        if cat in priority_categories:
+            bar_colors.append('#4361ee')  # Priority categories in blue
+        elif cat == "Sections Presence":
+            bar_colors.append('#2ec4b6')  # Sections in teal
+        else:
+            bar_colors.append('#667eea')  # Regular categories in light blue
+
     # Create bars
-    bars1 = ax.barh(y_pos, found_counts, color='#667eea', alpha=0.8, label='Keywords Found')
+    bars1 = ax.barh(y_pos, found_counts, color=bar_colors, alpha=0.8, label='Keywords Found')
     bars2 = ax.barh(y_pos, total_keywords, color='none', edgecolor='gray', linewidth=1.5, label='Total Possible')
 
     ax.set_yticks(y_pos)
-    ax.set_yticklabels(categories)
+    ax.set_yticklabels(categories, fontsize=10)
     ax.invert_yaxis()
-    ax.set_xlabel('Count')
-    ax.set_title(f'Resume Analysis Results for {applied_role}', fontsize=16, fontweight='bold')
+    ax.set_xlabel('Keyword Count', fontsize=12)
+    
+    # Enhanced title with job match information
+    title = f'Resume Analysis: {applied_role}\n'
+    if job_analysis:
+        title += f'Job Match Score: {job_analysis.get("job_match_percentage", 0):.1f}% | '
+    title += f'Overall ATS Score: {ats_score}%'
+    
+    ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
 
-    # Adding the achieved score inside the bars
+    # Adding the achieved score inside the bars with enhanced formatting
     max_scores_list = [MAX_SCORES[cat] for cat in categories]
-    for i, (score, max_score) in enumerate(zip(scores, max_scores_list)):
-        ax.text(max(found_counts[i], 1) + 0.3, i, f'{score} / {max_score}', va='center', fontsize=9, color='black')
+    for i, (score, max_score, found, total) in enumerate(zip(scores, max_scores_list, found_counts, total_keywords)):
+        # Score display
+        score_text = f'{score}/{max_score}'
+        ax.text(max(found, 1) + 0.5, i, score_text, va='center', fontsize=9, 
+                color='black', fontweight='bold')
+        
+        # Percentage display
+        if total > 0:
+            percentage = (found / total) * 100
+            percent_text = f'({percentage:.0f}%)'
+            ax.text(max(found, 1) + 2.5, i, percent_text, va='center', fontsize=8, 
+                    color='gray', style='italic')
 
-    ax.legend()
+    # Add priority category indicator
+    if priority_categories:
+        priority_legend = f"🎯 Priority for {applied_role}: {', '.join(priority_categories[:3])}"
+        if len(priority_categories) > 3:
+            priority_legend += f" (+{len(priority_categories)-3} more)"
+        
+        ax.text(0.02, 0.98, priority_legend, transform=ax.transAxes, 
+                fontsize=9, verticalalignment='top', 
+                bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.7))
+
+    # Enhanced legend
+    ax.legend(loc='lower right', fontsize=10)
+    
+    # Add grid for better readability
+    ax.grid(axis='x', alpha=0.3, linestyle='--')
+    
     plt.tight_layout()
     
     buffer = io.BytesIO()
@@ -544,14 +748,81 @@ def create_keyword_chart(extraction_results, sections_found, applied_role: str):
     return chart_base64
 
 def get_improvement_suggestions(extraction_results, applied_role: str):
-    """Get improvement suggestions based on missing keywords"""
+    """Get job-specific improvement suggestions based on missing keywords"""
     suggestions = {}
+    
+    # Get job-specific configuration
+    job_config = JOB_SPECIFIC_KEYWORDS.get(applied_role, {})
+    priority_categories = job_config.get("priority_categories", [])
+    required_keywords = job_config.get("required_keywords", [])
+    bonus_keywords = job_config.get("bonus_keywords", [])
+    
+    # Check for missing required keywords first
+    all_found_keywords = []
+    for keywords in extraction_results.values():
+        all_found_keywords.extend([kw.lower() for kw in keywords])
+    
+    missing_required = []
+    for req_keyword in required_keywords:
+        if not any(req_keyword.lower() in found_kw for found_kw in all_found_keywords):
+            missing_required.append(req_keyword)
+    
+    if missing_required:
+        suggestions["Critical Missing Keywords"] = missing_required[:5]
+    
+    # Check for missing bonus keywords
+    missing_bonus = []
+    for bonus_keyword in bonus_keywords:
+        if not any(bonus_keyword.lower() in found_kw for found_kw in all_found_keywords):
+            missing_bonus.append(bonus_keyword)
+    
+    if missing_bonus:
+        suggestions["Position-Specific Keywords to Add"] = missing_bonus[:5]
+    
+    # Regular category-based suggestions, prioritizing job-priority categories
     for category, keywords in KEYWORD_CATEGORIES.items():
         found_set = set(extraction_results.get(category, []))
         all_keywords = set(keywords)
         missing = all_keywords - found_set
+        
         if missing:
-            suggestions[category] = list(missing)[:5]  # Limit to 5 suggestions per category
+            # Prioritize suggestions for priority categories
+            if category in priority_categories:
+                suggestions[f"{category} (Priority)"] = list(missing)[:7]
+            else:
+                suggestions[category] = list(missing)[:5]
+    
+    # Add job-specific advice
+    if applied_role in JOB_SPECIFIC_KEYWORDS:
+        job_advice = []
+        
+        if applied_role.startswith("Dean"):
+            job_advice = [
+                "Emphasize leadership and management experience",
+                "Include academic administration background",
+                "Highlight strategic planning and vision development"
+            ]
+        elif "Lecturer" in applied_role:
+            job_advice = [
+                "Detail your teaching methodology and pedagogical approach",
+                "Include curriculum development experience",
+                "Mention student assessment and evaluation methods"
+            ]
+        elif "IT" in applied_role:
+            job_advice = [
+                "Specify technical certifications and training",
+                "Include project management experience",
+                "Detail troubleshooting and problem-solving examples"
+            ]
+        elif "Human Resources" in applied_role:
+            job_advice = [
+                "Highlight employee relations experience",
+                "Include knowledge of labor laws and regulations",
+                "Mention HRIS and payroll management experience"
+            ]
+        
+        if job_advice:
+            suggestions["Position-Specific Advice"] = job_advice
     
     return suggestions
 
@@ -1485,11 +1756,21 @@ async def analyze_resume_by_admin(resume_id: str, current_user: dict = Depends(g
         # Detect sections presence
         sections_found = detect_sections_presence(resume_text)
         
-        # Calculate ATS score using the aligned method
-        ats_score, category_scores = calculate_ats_score(extraction_results, sections_found)
+        # Use job-specific scoring instead of the basic calculate_ats_score
+        ats_score, category_scores, job_analysis = calculate_job_specific_score(
+            extraction_results, sections_found, resume_data.get('applied_role', 'General')
+        )
         
         suggestions = get_improvement_suggestions(extraction_results, resume_data.get('applied_role', 'General'))
         chart_base64 = create_keyword_chart(extraction_results, sections_found, resume_data.get('applied_role', 'General'))
+        
+        # Include job analysis in the response
+        analysis_data = {
+            "extraction_results": extraction_results,
+            "suggestions": suggestions,
+            "chart": chart_base64,
+            "job_analysis": job_analysis
+        }
         
         success = await update_resume_with_analysis(resume_id, ats_score, extraction_results, suggestions, chart_base64)
         
@@ -1507,6 +1788,7 @@ async def analyze_resume_by_admin(resume_id: str, current_user: dict = Depends(g
             "analysis_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "suggestions": suggestions,
             "applied_role": resume_data.get('applied_role', 'General'),
+            "job_analysis": job_analysis,
             "status": "analyzed"
         }
         
@@ -1709,6 +1991,10 @@ async def health_check():
             "user_management": True,
             "resume_analysis": True,
             "admin_dashboard": True,
+            "job_specific_scoring": True,
+            "position_based_analysis": True,
+            "priority_category_weighting": True,
+            "aiu_job_alignment": True,
             "debug_mode": False,  # Set to False in production
             "firebase_error_context": "Check logs for detailed Firebase authentication errors"
         }
