@@ -130,11 +130,19 @@
             color: #1e3c72;
         }
         
+        .stat-card.qualified i {
+            color: #4caf50;
+        }
+        
         .stat-value {
             font-size: 2rem;
             font-weight: bold;
             color: #1e3c72;
             margin-bottom: 5px;
+        }
+        
+        .stat-card.qualified .stat-value {
+            color: #4caf50;
         }
         
         .stat-label {
@@ -157,6 +165,10 @@
             color: white;
             padding: 15px;
             text-align: left;
+        }
+        
+        .data-table.qualified th {
+            background: #4caf50;
         }
         
         .data-table td {
@@ -217,6 +229,14 @@
             background: #d32f2f;
         }
         
+        .contact-btn {
+            background: #9c27b0;
+        }
+        
+        .contact-btn:hover {
+            background: #7b1fa2;
+        }
+        
         .status-badge {
             padding: 4px 12px;
             border-radius: 20px;
@@ -232,6 +252,29 @@
         .status-analyzed {
             background: #d4edda;
             color: #155724;
+        }
+        
+        .status-qualified {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .score-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .score-excellent {
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: white;
+        }
+        
+        .score-good {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            color: white;
         }
         
         .loader {
@@ -267,6 +310,40 @@
             border-radius: 4px;
             width: 300px;
             margin-bottom: 20px;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        
+        .qualified-header {
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .qualified-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+        
+        .qualified-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
         }
         
         .toast {
@@ -578,6 +655,29 @@
             color: #333;
             font-size: 1rem;
         }
+
+        .qualified-candidate {
+            background: linear-gradient(135deg, #e8f5e8, #f0fff0);
+            border-left: 4px solid #4caf50;
+        }
+
+        .qualified-candidate:hover {
+            background: linear-gradient(135deg, #dcedc8, #f1f8e9);
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .no-data-message i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 20px;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -614,7 +714,10 @@
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </li>
                 <li class="menu-item" data-section="resumes">
-                    <i class="fas fa-file-alt"></i> Resumes
+                    <i class="fas fa-file-alt"></i> All Resumes
+                </li>
+                <li class="menu-item" data-section="qualified">
+                    <i class="fas fa-medal"></i> Qualified Candidates
                 </li>
                 <li class="menu-item" data-section="analyzer">
                     <i class="fas fa-chart-line"></i> Resume Analyzer
@@ -649,6 +752,12 @@
                         <div class="stat-label">Resumes Analyzed</div>
                     </div>
                     
+                    <div class="stat-card qualified">
+                        <i class="fas fa-medal"></i>
+                        <div class="stat-value" id="qualifiedCandidates">Loading...</div>
+                        <div class="stat-label">Qualified Candidates (70%+)</div>
+                    </div>
+                    
                     <div class="stat-card">
                         <i class="fas fa-star"></i>
                         <div class="stat-value" id="averageScore">Loading...</div>
@@ -664,9 +773,16 @@
             
             <!-- Resumes Section -->
             <div id="resumesSection" style="display: none;">
-                <h2 class="dashboard-title">Resume Management</h2>
+                <h2 class="dashboard-title">All Resume Management</h2>
                 
-                <input type="text" id="searchInput" class="search-box" placeholder=" Search resumes...">
+                <div class="filter-section">
+                    <input type="text" id="searchInput" class="search-box" placeholder=" Search resumes...">
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="analyzed">Analyzed</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
                 
                 <table class="data-table" id="resumesTable">
                     <thead>
@@ -686,6 +802,44 @@
                 </table>
                 <div class="loader" id="tableLoader"></div>
                 <div id="errorMessage" class="error-message"></div>
+            </div>
+
+            <!-- Qualified Candidates Section -->
+            <div id="qualifiedSection" style="display: none;">
+                <div class="qualified-header">
+                    <h2><i class="fas fa-medal"></i> Qualified Candidates</h2>
+                    <p>Candidates with ATS scores of 70% and above - Ready for next steps!</p>
+                </div>
+                
+                <div class="filter-section">
+                    <input type="text" id="qualifiedSearchInput" class="search-box" placeholder=" Search qualified candidates...">
+                    <select id="scoreFilter" class="filter-select">
+                        <option value="">All Scores (70%+)</option>
+                        <option value="excellent">Excellent (85%+)</option>
+                        <option value="good">Good (70-84%)</option>
+                    </select>
+                    <select id="roleFilter" class="filter-select">
+                        <option value="">All Roles</option>
+                    </select>
+                </div>
+                
+                <table class="data-table qualified" id="qualifiedTable">
+                    <thead>
+                        <tr>
+                            <th>🏆 Rank</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Applied Role</th>
+                            <th>ATS Score</th>
+                            <th>Upload Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="qualifiedTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+                <div class="loader" id="qualifiedLoader"></div>
             </div>
             
             <!-- Resume Analyzer Section -->
@@ -757,6 +911,7 @@
         // Global variables
         let jwtToken = localStorage.getItem('admin_token');
         let allResumes = [];
+        let qualifiedResumes = [];
         let currentSection = 'dashboard';
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -784,6 +939,10 @@
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
             document.getElementById('refreshBtn').addEventListener('click', handleRefresh);
             document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('qualifiedSearchInput').addEventListener('input', handleQualifiedSearch);
+            document.getElementById('statusFilter').addEventListener('change', handleSearch);
+            document.getElementById('scoreFilter').addEventListener('change', handleQualifiedSearch);
+            document.getElementById('roleFilter').addEventListener('change', handleQualifiedSearch);
             document.getElementById('addAdminForm').addEventListener('submit', handleAddAdmin);
             
             // Menu navigation
@@ -828,6 +987,8 @@
         function handleRefresh() {
             if (currentSection === 'resumes') {
                 loadResumesData();
+            } else if (currentSection === 'qualified') {
+                loadQualifiedData();
             } else if (currentSection === 'analyzer') {
                 loadAnalyzerData();
             } else if (currentSection === 'admins') {
@@ -840,19 +1001,58 @@
         
         function handleSearch() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            if (!searchTerm) {
-                populateResumesTable(allResumes);
-                return;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            let filtered = allResumes;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(resume => 
+                    (resume.name && resume.name.toLowerCase().includes(searchTerm)) ||
+                    (resume.email && resume.email.toLowerCase().includes(searchTerm)) ||
+                    (resume.file_name && resume.file_name.toLowerCase().includes(searchTerm)) ||
+                    (resume.applied_role && resume.applied_role.toLowerCase().includes(searchTerm))
+                );
             }
             
-            const filtered = allResumes.filter(resume => 
-                (resume.name && resume.name.toLowerCase().includes(searchTerm)) ||
-                (resume.email && resume.email.toLowerCase().includes(searchTerm)) ||
-                (resume.file_name && resume.file_name.toLowerCase().includes(searchTerm)) ||
-                (resume.applied_role && resume.applied_role.toLowerCase().includes(searchTerm))
-            );
+            if (statusFilter) {
+                filtered = filtered.filter(resume => {
+                    const isAnalyzed = resume.ats_score != null;
+                    return statusFilter === 'analyzed' ? isAnalyzed : !isAnalyzed;
+                });
+            }
             
             populateResumesTable(filtered);
+        }
+
+        function handleQualifiedSearch() {
+            const searchTerm = document.getElementById('qualifiedSearchInput').value.toLowerCase();
+            const scoreFilter = document.getElementById('scoreFilter').value;
+            const roleFilter = document.getElementById('roleFilter').value;
+            
+            let filtered = qualifiedResumes;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(resume => 
+                    (resume.name && resume.name.toLowerCase().includes(searchTerm)) ||
+                    (resume.email && resume.email.toLowerCase().includes(searchTerm)) ||
+                    (resume.applied_role && resume.applied_role.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            if (scoreFilter) {
+                filtered = filtered.filter(resume => {
+                    const score = resume.ats_score;
+                    return scoreFilter === 'excellent' ? score >= 85 : score >= 70 && score < 85;
+                });
+            }
+            
+            if (roleFilter) {
+                filtered = filtered.filter(resume => 
+                    resume.applied_role && resume.applied_role === roleFilter
+                );
+            }
+            
+            populateQualifiedTable(filtered);
         }
         
         function switchSection(section) {
@@ -866,6 +1066,7 @@
             // Show selected section
             document.getElementById('dashboardSection').style.display = 'none';
             document.getElementById('resumesSection').style.display = 'none';
+            document.getElementById('qualifiedSection').style.display = 'none';
             document.getElementById('analyzerSection').style.display = 'none';
             document.getElementById('adminsSection').style.display = 'none';
             
@@ -875,6 +1076,9 @@
             } else if (section === 'resumes') {
                 document.getElementById('resumesSection').style.display = 'block';
                 loadResumesData();
+            } else if (section === 'qualified') {
+                document.getElementById('qualifiedSection').style.display = 'block';
+                loadQualifiedData();
             } else if (section === 'analyzer') {
                 document.getElementById('analyzerSection').style.display = 'block';
                 loadAnalyzerData();
@@ -891,6 +1095,7 @@
                 document.getElementById('totalUsers').textContent = 'Loading...';
                 document.getElementById('totalResumes').textContent = 'Loading...';
                 document.getElementById('totalAnalyzed').textContent = 'Loading...';
+                document.getElementById('qualifiedCandidates').textContent = 'Loading...';
                 document.getElementById('averageScore').textContent = 'Loading...';
                 
                 const statsResponse = await fetch('/api/admin/stats', {
@@ -926,7 +1131,10 @@
                     console.log('Loaded resumes:', resumes.length);
                     
                     const analyzedCount = resumes.filter(r => r.ats_score != null).length;
+                    const qualifiedCount = resumes.filter(r => r.ats_score != null && r.ats_score >= 70).length;
+                    
                     document.getElementById('totalAnalyzed').textContent = analyzedCount;
+                    document.getElementById('qualifiedCandidates').textContent = qualifiedCount;
                     
                     const analyzedResumes = resumes.filter(r => r.ats_score != null);
                     if (analyzedResumes.length > 0) {
@@ -939,6 +1147,7 @@
                     updateRecentResumesTable(resumes);
                 } else {
                     document.getElementById('totalAnalyzed').textContent = 'Error';
+                    document.getElementById('qualifiedCandidates').textContent = 'Error';
                     document.getElementById('averageScore').textContent = 'Error';
                 }
                 
@@ -947,6 +1156,7 @@
                 document.getElementById('totalUsers').textContent = 'Error';
                 document.getElementById('totalResumes').textContent = 'Error';
                 document.getElementById('totalAnalyzed').textContent = 'Error';
+                document.getElementById('qualifiedCandidates').textContent = 'Error';
                 document.getElementById('averageScore').textContent = 'Error';
                 showToast('Failed to load dashboard data', 'error');
             }
@@ -979,13 +1189,14 @@
                         ${recent.map(resume => {
                             const date = resume.upload_date || '';
                             const isAnalyzed = resume.ats_score != null;
+                            const isQualified = isAnalyzed && resume.ats_score >= 70;
                             return `
-                            <tr>
+                            <tr class="${isQualified ? 'qualified-candidate' : ''}">
                                 <td>${resume.name || 'N/A'}</td>
                                 <td>${date.split(' ')[0] || 'N/A'}</td>
                                 <td>
-                                    <span class="status-badge ${isAnalyzed ? 'status-analyzed' : 'status-pending'}">
-                                        ${isAnalyzed ? 'Analyzed' : 'Pending'}
+                                    <span class="status-badge ${isQualified ? 'status-qualified' : isAnalyzed ? 'status-analyzed' : 'status-pending'}">
+                                        ${isQualified ? 'Qualified ⭐' : isAnalyzed ? 'Analyzed' : 'Pending'}
                                     </span>
                                 </td>
                                 <td><strong>${isAnalyzed ? resume.ats_score + '%' : 'N/A'}</strong></td>
@@ -1036,6 +1247,134 @@
                 loader.style.display = 'none';
             }
         }
+
+        async function loadQualifiedData() {
+            console.log('Loading qualified candidates data...');
+            
+            const loader = document.getElementById('qualifiedLoader');
+            const tableBody = document.getElementById('qualifiedTableBody');
+            
+            loader.style.display = 'block';
+            tableBody.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/admin/resumes', {
+                    headers: {
+                        'Authorization': `Bearer ${jwtToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('admin_token');
+                        window.location.href = '/admin-login';
+                        return;
+                    }
+                    throw new Error('Failed to fetch resumes');
+                }
+                
+                const allResumesData = await response.json();
+                
+                // Filter qualified candidates (70%+ ATS score)
+                qualifiedResumes = allResumesData.filter(resume => 
+                    resume.ats_score != null && resume.ats_score >= 70
+                );
+                
+                console.log('Qualified candidates:', qualifiedResumes.length);
+                
+                // Populate role filter
+                populateRoleFilter(qualifiedResumes);
+                
+                // Populate table
+                populateQualifiedTable(qualifiedResumes);
+                
+            } catch (error) {
+                console.error('Qualified candidates error:', error);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            <div class="no-data-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Error loading qualified candidates: ${error.message}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function populateRoleFilter(resumes) {
+            const roleFilter = document.getElementById('roleFilter');
+            const roles = [...new Set(resumes.map(r => r.applied_role).filter(role => role))];
+            
+            // Clear existing options except "All Roles"
+            roleFilter.innerHTML = '<option value="">All Roles</option>';
+            
+            roles.forEach(role => {
+                const option = document.createElement('option');
+                option.value = role;
+                option.textContent = role;
+                roleFilter.appendChild(option);
+            });
+        }
+
+        function populateQualifiedTable(resumes) {
+            const tableBody = document.getElementById('qualifiedTableBody');
+            
+            if (resumes.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            <div class="no-data-message">
+                                <i class="fas fa-medal"></i>
+                                No qualified candidates found (ATS score 70%+)
+                                <br><br>
+                                <small>Qualified candidates will appear here once their resumes are analyzed and score 70% or higher.</small>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Sort by ATS score (highest first)
+            const sortedResumes = [...resumes].sort((a, b) => b.ats_score - a.ats_score);
+            
+            tableBody.innerHTML = sortedResumes.map((resume, index) => {
+                const date = resume.upload_date || '';
+                const displayDate = date ? date.split(' ')[0] : 'N/A';
+                const scoreClass = resume.ats_score >= 85 ? 'score-excellent' : 'score-good';
+                const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+                
+                return `
+                <tr class="qualified-candidate">
+                    <td><strong>${rankIcon}</strong></td>
+                    <td><strong>${resume.name || 'N/A'}</strong></td>
+                    <td>${resume.email || 'N/A'}</td>
+                    <td><strong>${resume.applied_role || 'Not specified'}</strong></td>
+                    <td>
+                        <span class="score-badge ${scoreClass}">
+                            ${resume.ats_score}%
+                        </span>
+                    </td>
+                    <td>${displayDate}</td>
+                    <td>
+                        <button class="action-btn view-btn" onclick="viewAnalysis('${resume.id}')">
+                            <i class="fas fa-eye"></i> View Analysis
+                        </button>
+                        <button class="action-btn contact-btn" onclick="contactCandidate('${resume.id}', '${resume.email}', '${resume.name}')">
+                            <i class="fas fa-envelope"></i> Contact
+                        </button>
+                        <button class="action-btn download-btn" onclick="downloadResume('${resume.id}')">
+                            <i class="fas fa-download"></i> Resume
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
         
         function populateResumesTable(resumes) {
             const tableBody = document.getElementById('resumesTableBody');
@@ -1057,15 +1396,16 @@
                 const date = resume.upload_date || '';
                 const displayDate = date ? date.split(' ')[0] : 'N/A';
                 const isAnalyzed = resume.ats_score != null;
+                const isQualified = isAnalyzed && resume.ats_score >= 70;
                 
                 return `
-                <tr>
+                <tr class="${isQualified ? 'qualified-candidate' : ''}">
                     <td>${resume.name || 'N/A'}</td>
                     <td>${resume.email || 'N/A'}</td>
                     <td>${displayDate}</td>
                     <td>
-                        <span class="status-badge ${isAnalyzed ? 'status-analyzed' : 'status-pending'}">
-                            ${isAnalyzed ? 'Analyzed' : 'Pending'}
+                        <span class="status-badge ${isQualified ? 'status-qualified' : isAnalyzed ? 'status-analyzed' : 'status-pending'}">
+                            ${isQualified ? 'Qualified ⭐' : isAnalyzed ? 'Analyzed' : 'Pending'}
                         </span>
                     </td>
                     <td><strong>${isAnalyzed ? resume.ats_score + '%' : 'N/A'}</strong></td>
@@ -1147,16 +1487,17 @@
                 const date = resume.upload_date || '';
                 const displayDate = date ? date.split(' ')[0] : 'N/A';
                 const isAnalyzed = resume.ats_score != null;
+                const isQualified = isAnalyzed && resume.ats_score >= 70;
                 
                 return `
-                <tr>
+                <tr class="${isQualified ? 'qualified-candidate' : ''}">
                     <td>${resume.name || 'N/A'}</td>
                     <td>${resume.email || 'N/A'}</td>
                     <td>${displayDate}</td>
                     <td>${resume.applied_role || 'Not specified'}</td>
                     <td>
-                        <span class="status-badge ${isAnalyzed ? 'status-analyzed' : 'status-pending'}">
-                            ${isAnalyzed ? 'Analyzed (' + resume.ats_score + '%)' : 'Pending Analysis'}
+                        <span class="status-badge ${isQualified ? 'status-qualified' : isAnalyzed ? 'status-analyzed' : 'status-pending'}">
+                            ${isQualified ? 'Qualified (' + resume.ats_score + '%) ⭐' : isAnalyzed ? 'Analyzed (' + resume.ats_score + '%)' : 'Pending Analysis'}
                         </span>
                     </td>
                     <td>
@@ -1315,6 +1656,8 @@
                 // Refresh data
                 if (currentSection === 'resumes') {
                     loadResumesData();
+                } else if (currentSection === 'qualified') {
+                    loadQualifiedData();
                 } else if (currentSection === 'analyzer') {
                     loadAnalyzerData();
                 }
@@ -1360,17 +1703,39 @@
             }
         };
 
+        window.contactCandidate = function(resumeId, email, name) {
+            const subject = encodeURIComponent(`Interview Opportunity - Your Resume Application`);
+            const body = encodeURIComponent(`Dear ${name || 'Candidate'},
+
+We are pleased to inform you that your resume has been reviewed and you have achieved a qualifying ATS score.
+
+We would like to schedule an interview to discuss potential opportunities with our organization.
+
+Please let us know your availability for the coming week.
+
+Best regards,
+HR Team`);
+            
+            const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+            window.open(mailtoLink);
+            
+            showToast(`Email client opened for ${email}`, 'success');
+        };
+
         function showAnalysisModal(resumeData) {
             const modal = document.getElementById('analysisModal');
             const modalBody = document.getElementById('analysisModalBody');
             
             const analysisData = resumeData.analysis_data;
             const extractionResults = analysisData.extraction_results || {};
+            const isQualified = resumeData.ats_score >= 70;
 
             modalBody.innerHTML = `
-                <div class="score-display">
+                <div class="score-display" style="${isQualified ? 'background: linear-gradient(135deg, #4caf50, #45a049);' : ''}">
                     <div class="score-value">${resumeData.ats_score}%</div>
-                    <div class="score-subtitle">ATS Score for ${resumeData.applied_role}</div>
+                    <div class="score-subtitle">
+                        ${isQualified ? '⭐ QUALIFIED CANDIDATE ⭐' : 'ATS Score'} for ${resumeData.applied_role}
+                    </div>
                 </div>
 
                 <div class="info-row">
@@ -1390,7 +1755,23 @@
                         <div class="info-label">📅 Analysis Date</div>
                         <div class="info-value">${resumeData.analysis_date || 'N/A'}</div>
                     </div>
+                    ${isQualified ? `
+                    <div class="info-item">
+                        <div class="info-label">🏆 Status</div>
+                        <div class="info-value" style="color: #4caf50; font-weight: bold;">QUALIFIED CANDIDATE</div>
+                    </div>
+                    ` : ''}
                 </div>
+                
+                ${isQualified ? `
+                <div class="analysis-section">
+                    <h3>🎉 Congratulations! This candidate meets our qualification criteria</h3>
+                    <p style="background: #e8f5e8; padding: 15px; border-radius: 8px; color: #2e7d32;">
+                        <strong>Next Steps:</strong> This candidate has achieved an ATS score of ${resumeData.ats_score}% (70%+ required). 
+                        Consider scheduling an interview or moving them to the next stage of your hiring process.
+                    </p>
+                </div>
+                ` : ''}
                 
                 ${analysisData.chart ? `
                 <div class="analysis-section">
@@ -1421,6 +1802,20 @@
                         `).join('')}
                     </div>
                 </div>
+                
+                ${isQualified ? `
+                <div class="analysis-section">
+                    <h3>🚀 Quick Actions</h3>
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                        <button class="action-btn contact-btn" onclick="contactCandidate('${resumeData.id}', '${resumeData.email}', '${resumeData.name}'); closeAnalysisModal();">
+                            <i class="fas fa-envelope"></i> Contact Candidate
+                        </button>
+                        <button class="action-btn download-btn" onclick="downloadResume('${resumeData.id}');">
+                            <i class="fas fa-download"></i> Download Resume
+                        </button>
+                    </div>
+                </div>
+                ` : ''}
             `;
             
             modal.style.display = 'block';
@@ -1521,6 +1916,8 @@
                 // Refresh data
                 if (currentSection === 'resumes') {
                     loadResumesData();
+                } else if (currentSection === 'qualified') {
+                    loadQualifiedData();
                 } else if (currentSection === 'analyzer') {
                     loadAnalyzerData();
                 }
